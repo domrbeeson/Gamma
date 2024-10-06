@@ -36,7 +36,7 @@ public abstract class Inventory implements Tickable, Viewable {
     private boolean changed = false;
 
     public Inventory(InventoryType type, String title) {
-        this(type, title, new Item[0]);
+        this(type, title, new Item[type.slots]);
     }
 
     public Inventory(InventoryType type, String title, Item[] items) {
