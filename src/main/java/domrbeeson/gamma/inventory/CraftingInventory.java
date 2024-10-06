@@ -34,8 +34,8 @@ public class CraftingInventory extends Inventory {
         outputSlot = 0;
     }
 
-    protected CraftingInventory(RecipeManager recipeManager, int[][] craftingGrid, int outputSlot) {
-        super(InventoryType.PLAYER, "");
+    protected CraftingInventory(RecipeManager recipeManager, int[][] craftingGrid, int outputSlot, Item[] items) {
+        super(InventoryType.PLAYER, "", items);
         this.recipeManager = recipeManager;
         this.craftingGrid = craftingGrid;
         this.outputSlot = outputSlot;

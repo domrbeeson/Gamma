@@ -2,7 +2,6 @@ package domrbeeson.gamma.inventory;
 
 import domrbeeson.gamma.crafting.RecipeManager;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.player.Player;
 
 import java.util.concurrent.CompletableFuture;
@@ -38,22 +37,19 @@ public class PlayerInventory extends CraftingInventory {
             { 42, 43 }
     };
 
-    private final Player player;
+    private final String username;
 
     private int activeSlot = 0;
     private int activeSlotNextTick = 0;
 
-    public PlayerInventory(Player player, RecipeManager recipeManager) {
-        super(recipeManager, CRAFTING_GRID, 44);
-        this.player = player;
-        setSlot(0, Material.DIAMOND_PICKAXE);
-        setSlot(2,  Material.LEATHER_TUNIC);
-        setSlot(4, Material.CRAFTING_TABLE);
-        setSlot(5, Material.OAK_PLANKS.getItem(4));
-        setSlot(1, Material.CHEST);
-        setSlot(6, Material.FURNACE);
-        setSlot(7, Material.LAVA_BUCKET);
-        setSlot(8, Material.WHEAT.getItem(10));
+    public PlayerInventory(String username, RecipeManager recipeManager) {
+        this(username, recipeManager, new Item[0]);
+    }
+
+    public PlayerInventory(String username, RecipeManager recipeManager, Item[] items) {
+        super(recipeManager, CRAFTING_GRID, 44, items);
+        this.username = username;
+
     }
 
     public void setCraftingSlot(int slot, Item item) {
@@ -137,8 +133,8 @@ public class PlayerInventory extends CraftingInventory {
 
     @Override
     public CompletableFuture<Void> addViewer(Player player) {
-        if (player != this.player) {
-            throw new UnsupportedOperationException("Player '" + player.getUsername() + "' cannot view the inventory of '" + this.player.getUsername() + "'.");
+        if (!player.getUsername().equalsIgnoreCase(username)) {
+            throw new UnsupportedOperationException("Player '" + player.getUsername() + "' cannot view the inventory of '" + username + "'.");
         }
         return super.addViewer(player);
     }

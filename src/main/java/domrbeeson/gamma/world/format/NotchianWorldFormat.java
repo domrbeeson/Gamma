@@ -52,7 +52,7 @@ public abstract class NotchianWorldFormat implements WorldFormat {
         if (!playerDatFile.exists()) {
             return null;
         }
-        return new NBTPlayer(playerDatFile, (NBTCompound) NBTTag.loadFromFile(playerDatFile));
+        return new NBTPlayer(playerDatFile, (NBTCompound) NBTTag.loadFromFile(playerDatFile), username, world.getServer().getRecipeManager());
     }
 
     @Override
@@ -99,6 +99,7 @@ public abstract class NotchianWorldFormat implements WorldFormat {
                 .pos(nbt.getPos())
                 .sleepTimer(nbt.getSleepTimer())
                 .sleeping(nbt.isSleeping())
+                .inventory(nbt.getInventory())
                 .build();
     }
 

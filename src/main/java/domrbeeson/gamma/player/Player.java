@@ -59,7 +59,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
         this.connection = builder.connection;
         this.version = builder.version;
         this.username = builder.username;
-        inventory = new PlayerInventory(this, server.getRecipeManager());
+        this.inventory = builder.inventory;
 
         keepAliveTask = new KeepAliveTask(this);
 
@@ -393,6 +393,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
         private short fireTicks = 0;
         private short health = 0;
         private short hurtTime = 0;
+        private PlayerInventory inventory = null;
         private double[] motion = new double[3];
         private boolean onGround = false;
         private World world = null;
@@ -478,7 +479,15 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
             return this;
         }
 
+        public Builder inventory(PlayerInventory inventory) {
+            this.inventory = inventory;
+            return this;
+        }
+
         public Player build() {
+            if (inventory == null) {
+                inventory = new PlayerInventory(username, server.getRecipeManager());
+            }
             return new Player(this);
         }
 
