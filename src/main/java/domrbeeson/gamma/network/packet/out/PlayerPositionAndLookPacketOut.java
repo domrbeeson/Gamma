@@ -16,9 +16,9 @@ public class PlayerPositionAndLookPacketOut extends PacketOut {
     public PlayerPositionAndLookPacketOut(Pos pos, boolean onGround) {
         super(Packet.PLAYER_POSITION_AND_LOOK);
         this.x = pos.x();
-        this.y = pos.y();
+        this.stance = pos.y();
+        this.y = stance + 1.65;
         this.z = pos.z();
-        this.stance = pos.y() - 1.65;
         this.yaw = pos.yaw();
         this.pitch = pos.pitch();
         this.onGround = onGround;

@@ -74,7 +74,8 @@ public class PlayerManager implements Closeable, Runnable {
     public Player create(PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
         Player player = PLAYERS_BY_USERNAME.get(username);
         if (player == null) {
-            player = new Player(server, connection, version, username, server.getWorldManager().getDefaultWorld(), joinMessage);
+            Player.Builder builder = Player.newBuilder(server, connection, username, version, joinMessage);
+            player = server.getWorldManager().getDefaultWorld().getFormat().readPlayer(builder);
             PLAYERS_BY_USERNAME.put(username, player);
             PLAYERS_BY_CONNECTION.put(connection, player);
             System.out.println(username + " joined [players: " + PLAYERS_BY_USERNAME.size() + "]");

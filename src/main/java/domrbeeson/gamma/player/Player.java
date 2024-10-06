@@ -18,6 +18,7 @@ import domrbeeson.gamma.network.packet.PacketOut;
 import domrbeeson.gamma.network.packet.out.*;
 import domrbeeson.gamma.version.MinecraftVersion;
 import domrbeeson.gamma.world.Chunk;
+import domrbeeson.gamma.world.Dimension;
 import domrbeeson.gamma.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,34 +52,33 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     private boolean crouchAnimation = false;
     private boolean uncrouchAnimation = false;
 
-    protected Player(MinecraftServer server, PlayerConnection connection, MinecraftVersion version, String username, World world, @Nullable ChatMessage joinMessage) {
-        super(EntityType.PLAYER, world, Pos.ZERO, new LivingEntityMetadata(), new CollisionBox(Pos.ZERO, 0.6, 1.8), 20);
-        this.server = server;
-        this.connection = connection;
-        this.version = version;
-        this.username = username;
+    protected Player(Builder builder) {
+        super(EntityType.PLAYER, builder.world, builder.pos, new LivingEntityMetadata(), new CollisionBox(builder.pos, 0.6, 1.8), builder.health);
+
+        this.server = builder.server;
+        this.connection = builder.connection;
+        this.version = builder.version;
+        this.username = builder.username;
         inventory = new PlayerInventory(this, server.getRecipeManager());
 
         keepAliveTask = new KeepAliveTask(this);
-        server.getScheduler().scheduleTask(keepAliveTask);
 
-        final Pos spawnPos = world.getPlayerPos(this);
-        if (world == null || spawnPos == null) {
+        if (builder.world == null) {
             sendPacket(new PlayerKickPacketOut("Must specify a world and position to spawn!"));
             return;
         }
-        teleport(spawnPos);
-//        super.updatePos(spawnPos);
 
-        world.addViewer(this).thenAccept(a -> {
-            if (joinMessage != null) {
-                sendMessage(joinMessage);
-                server.broadcast(joinMessage);
+        server.getScheduler().scheduleTask(keepAliveTask);
+
+        builder.world.addViewer(this).thenAccept(a -> {
+            if (builder.joinMessage != null) {
+//                sendMessage(builder.joinMessage);
+                server.broadcast(builder.joinMessage);
             }
-            loading.complete(null);
-            updateSurroundingChunks(spawnPos.getChunkX(), spawnPos.getChunkZ());
+            updateSurroundingChunks(builder.pos.getChunkX(), builder.pos.getChunkZ());
 
             inventory.addViewer(this);
+            loading.complete(null);
         });
     }
 
@@ -127,7 +127,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     @Override
     public void spawn() {
         super.spawn();
-        sendPacket(new SpawnPositionPacketOut(getWorld().getPlayerSpawn(this)));
+        sendPacket(new SpawnPositionPacketOut(getPos()));
         sendPacket(new TimePacketOut(getWorld().getTime()));
         // TODO send inventory
         sendPacket(new EntityVelocityPacketOut(getEntityId(), (short) 0, (short) 0, (short) 0));
@@ -156,7 +156,6 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
 
         PlayerQuitEvent event = new PlayerQuitEvent(this);
         server.call(event);
-
         server.getPlayerManager().remove(this);
         keepAliveTask.setCancelled(true);
         connection.getReader().close();
@@ -166,6 +165,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
         } catch (IOException e) {
             e.printStackTrace();
         }
+        world.getFormat().writePlayer(this);
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage != null) {
@@ -371,6 +371,117 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
             sendMessage("drop cursor item here [" + cursorItem.amount() + "x " + cursorItem.id() + ":" + cursorItem.metadata() + "]");
             cursorItem = null;
         }
+    }
+
+    protected static Builder newBuilder(MinecraftServer server, PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
+        return new Builder(server, connection, username, version, joinMessage);
+    }
+
+    public static class Builder {
+
+        public final MinecraftServer server;
+        public final PlayerConnection connection;
+        public final String username;
+        public final MinecraftVersion version;
+        public final @Nullable ChatMessage joinMessage;
+
+        private short air = 0;
+        private short attackTime = 0;
+        private short deathTime = 0;
+        private Dimension dimension = Dimension.OVERWORLD;
+        private float fallDistance = 0;
+        private short fireTicks = 0;
+        private short health = 0;
+        private short hurtTime = 0;
+        private double[] motion = new double[3];
+        private boolean onGround = false;
+        private World world = null;
+        private Pos pos = Pos.ZERO;
+        private short sleepTimer = 0;
+        private boolean sleeping = false;
+
+        private Builder(MinecraftServer server, PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
+            this.server = server;
+            this.connection = connection;
+            this.username = username;
+            this.version = version;
+            this.joinMessage = joinMessage;
+        }
+
+        public Builder air(short air) {
+            this.air = air;
+            return this;
+        }
+
+        public Builder attackTime(short attackTime) {
+            this.attackTime = attackTime;
+            return this;
+        }
+
+        public Builder deathTime(short deathTime) {
+            this.deathTime = deathTime;
+            return this;
+        }
+
+        public Builder dimension(Dimension dimension) {
+            this.dimension = dimension;
+            return this;
+        }
+
+        public Builder fallDistance(float fallDistance) {
+            this.fallDistance = fallDistance;
+            return this;
+        }
+
+        public Builder fireTicks(short fireTicks) {
+            this.fireTicks = fireTicks;
+            return this;
+        }
+
+        public Builder health(short health) {
+            this.health = health;
+            return this;
+        }
+
+        public Builder hurtTime(short hurtTime) {
+            this.hurtTime = hurtTime;
+            return this;
+        }
+
+        public Builder motion(double[] motion) {
+            this.motion = motion;
+            return this;
+        }
+
+        public Builder onGround(boolean onGround) {
+            this.onGround = onGround;
+            return this;
+        }
+
+        public Builder pos(Pos pos) {
+            this.pos = pos.add(0, 0.5, 0);
+            return this;
+        }
+
+        public Builder sleepTimer(short sleepTimer) {
+            this.sleepTimer = sleepTimer;
+            return this;
+        }
+
+        public Builder sleeping(boolean sleeping) {
+            this.sleeping = sleeping;
+            return this;
+        }
+
+        public Builder world(World world) {
+            this.world = world;
+            return this;
+        }
+
+        public Player build() {
+            return new Player(this);
+        }
+
     }
 
 }

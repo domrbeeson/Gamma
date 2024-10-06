@@ -1,6 +1,7 @@
 package domrbeeson.gamma.world.format;
 
 import domrbeeson.gamma.entity.Pos;
+import domrbeeson.gamma.player.Player;
 import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.Dimension;
 import domrbeeson.gamma.world.World;
@@ -35,6 +36,16 @@ public class ReadOnlyWorldFormat implements WorldFormat {
 
     @Override
     public void writeChunk(Chunk chunk) {
+
+    }
+
+    @Override
+    public Player readPlayer(Player.Builder builder) {
+        return worldFormat.readPlayer(builder);
+    }
+
+    @Override
+    public void writePlayer(Player player) {
 
     }
 

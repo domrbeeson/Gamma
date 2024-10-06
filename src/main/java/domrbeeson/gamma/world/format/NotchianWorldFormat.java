@@ -5,6 +5,8 @@ import domrbeeson.gamma.entity.Pos;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.world.NBTLevelDat;
+import domrbeeson.gamma.nbt.world.NBTPlayer;
+import domrbeeson.gamma.player.Player;
 import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -15,13 +17,13 @@ public abstract class NotchianWorldFormat implements WorldFormat {
 
     private World world;
     private File worldFolder = null;
+    private File playersFolder = null;
     private NBTLevelDat levelDat = null;
 
     public abstract int getVersion();
 
     private File getLevelDatFile(World world) {
-        worldFolder = new File(world.getName());
-        return new File(worldFolder, "level.dat");
+        return new File(getWorldFolder(world), "level.dat");
     }
 
     @Nullable
@@ -33,6 +35,26 @@ public abstract class NotchianWorldFormat implements WorldFormat {
         return new NBTLevelDat(levelDatFile, (NBTCompound) NBTTag.loadFromFile(levelDatFile));
     }
 
+    private File getPlayersFolder(World world) {
+        if (playersFolder == null) {
+            playersFolder = new File(getWorldFolder(world), "players");
+        }
+        return playersFolder;
+    }
+
+    private File getPlayerDatFile(World world, String username) {
+        return new File(getPlayersFolder(world), username + ".dat");
+    }
+
+    @Nullable
+    private NBTPlayer getPlayerDat(World world, String username) {
+        File playerDatFile = getPlayerDatFile(world, username);
+        if (!playerDatFile.exists()) {
+            return null;
+        }
+        return new NBTPlayer(playerDatFile, (NBTCompound) NBTTag.loadFromFile(playerDatFile));
+    }
+
     @Override
     public boolean exists(World world) {
         return getLevelDat() != null;
@@ -41,6 +63,7 @@ public abstract class NotchianWorldFormat implements WorldFormat {
     @Override
     public void create(World world) {
         getWorldFolder(world).mkdirs();
+        getPlayersFolder(world).mkdirs();
         levelDat = new NBTLevelDat(getLevelDatFile(world), world.getName() ,this);
         this.world = world;
         save();
@@ -53,14 +76,51 @@ public abstract class NotchianWorldFormat implements WorldFormat {
     }
 
     @Override
+    public Player readPlayer(Player.Builder builder) {
+        builder.world(world);
+
+        NBTPlayer nbt = getPlayerDat(world, builder.username);
+        if (nbt == null) {
+            builder.pos(world.getSpawn());
+            return builder.build();
+        }
+
+        return builder
+                .air(nbt.getAir())
+                .attackTime(nbt.getAttackTime())
+                .deathTime(nbt.getDeathTime())
+                .dimension(nbt.getDimension())
+                .fallDistance(nbt.getFallDistance())
+                .fireTicks(nbt.getFireTicks())
+                .health(nbt.getHealth())
+                .hurtTime(nbt.getHurtTime())
+                .motion(nbt.getMotion())
+                .onGround(nbt.onGround())
+                .pos(nbt.getPos())
+                .sleepTimer(nbt.getSleepTimer())
+                .sleeping(nbt.isSleeping())
+                .build();
+    }
+
+    @Override
+    public void writePlayer(Player player) {
+        new NBTPlayer(getPlayerDatFile(world, player.getUsername()), player).save();
+    }
+
+    @Override
     public void save() {
         levelDat.save();
-        int saved = 0;
+        int chunksSaved = 0;
         for (Chunk chunk : world.getAndClearChangedChunks()) {
             writeChunk(chunk);
-            saved++;
+            chunksSaved++;
         }
-        System.out.println("Saved " + saved + " chunks");
+        int playersSaved = 0;
+        for (Player player : world.getViewers()) {
+            new NBTPlayer(getPlayerDatFile(world, player.getUsername()), player).save();
+            playersSaved++;
+        }
+        System.out.println("Saved " + chunksSaved + " chunks and " + playersSaved + " players in world '" + world.getName() + "'");
     }
 
     protected final World getWorld() {
