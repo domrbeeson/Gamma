@@ -34,7 +34,7 @@ public abstract class LivingEntity<T extends LivingEntityMetadata> extends Healt
         ENTITY_TO_NAME.forEach((entity, name) -> NAME_TO_ENTITY.put(name, entity));
     }
 
-    public LivingEntity(EntityType type, World world, Pos pos, T metadata, CollisionBox collisionBox, double maxHealth) {
+    public LivingEntity(EntityType type, World world, Pos pos, T metadata, CollisionBox collisionBox, short maxHealth) {
         super(type, world, pos, metadata, collisionBox, maxHealth);
     }
 

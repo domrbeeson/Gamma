@@ -16,7 +16,7 @@ public class SquidEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public SquidEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.SQUID, world, pos, meta, new CollisionBox(pos, 0.8, 0.8), 10);
+        super(EntityType.SQUID, world, pos, meta, new CollisionBox(pos, 0.8, 0.8), (short) 10);
     }
 
 }

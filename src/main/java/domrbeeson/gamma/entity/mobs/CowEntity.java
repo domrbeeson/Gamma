@@ -16,7 +16,7 @@ public class CowEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public CowEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.COW, world, pos, meta, new CollisionBox(pos, 0.9, 1.4), 10);
+        super(EntityType.COW, world, pos, meta, new CollisionBox(pos, 0.9, 1.4), (short) 10);
     }
 
 }

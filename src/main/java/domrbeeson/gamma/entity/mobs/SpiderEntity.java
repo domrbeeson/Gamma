@@ -16,7 +16,7 @@ public class SpiderEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public SpiderEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.SPIDER, world, pos, meta, new CollisionBox(pos, 1.4, 0.9), 16);
+        super(EntityType.SPIDER, world, pos, meta, new CollisionBox(pos, 1.4, 0.9), (short) 16);
     }
 
 }

@@ -16,7 +16,7 @@ public class CreeperEntity extends LivingEntity<CreeperMetadata> {
     }
 
     public CreeperEntity(World world, Pos pos, CreeperMetadata meta) {
-        super(EntityType.CREEPER, world, pos, meta, new CollisionBox(pos, 0.6,1.7), 20);
+        super(EntityType.CREEPER, world, pos, meta, new CollisionBox(pos, 0.6,1.7), (short) 20);
     }
 
 }

@@ -16,7 +16,7 @@ public class SheepEntity extends LivingEntity<SheepMetadata> {
     }
 
     public SheepEntity(World world, Pos pos, SheepMetadata meta) {
-        super(EntityType.SHEEP, world, pos, meta, new CollisionBox(pos, 0.9, 1.3), 8);
+        super(EntityType.SHEEP, world, pos, meta, new CollisionBox(pos, 0.9, 1.3), (short) 8);
     }
 
 }

@@ -16,7 +16,7 @@ public class PigEntity extends LivingEntity<PigMetadata> {
     }
 
     public PigEntity(World world, Pos pos, PigMetadata meta) {
-        super(EntityType.PIG, world, pos, meta, new CollisionBox(pos, 0.9, 0.9), 10);
+        super(EntityType.PIG, world, pos, meta, new CollisionBox(pos, 0.9, 0.9), (short) 10);
     }
 
 }
