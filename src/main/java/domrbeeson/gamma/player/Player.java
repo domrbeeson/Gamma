@@ -68,11 +68,12 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
             return;
         }
 
+        // TODO synchronous player join event?
+
         server.getScheduler().scheduleTask(keepAliveTask);
 
         builder.world.addViewer(this).thenAccept(a -> {
             if (builder.joinMessage != null) {
-//                sendMessage(builder.joinMessage);
                 server.broadcast(builder.joinMessage);
             }
             updateSurroundingChunks(builder.pos.getChunkX(), builder.pos.getChunkZ());
@@ -400,6 +401,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
         private Pos pos = Pos.ZERO;
         private short sleepTimer = 0;
         private boolean sleeping = false;
+        private boolean firstJoin = false;
 
         private Builder(MinecraftServer server, PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
             this.server = server;
@@ -481,6 +483,11 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
 
         public Builder inventory(PlayerInventory inventory) {
             this.inventory = inventory;
+            return this;
+        }
+
+        public Builder firstJoin(boolean firstJoin) {
+            this.firstJoin = firstJoin;
             return this;
         }
 

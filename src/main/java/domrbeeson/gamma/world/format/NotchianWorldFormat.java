@@ -81,7 +81,8 @@ public abstract class NotchianWorldFormat implements WorldFormat {
 
         NBTPlayer nbt = getPlayerDat(world, builder.username);
         if (nbt == null) {
-            builder.pos(world.getSpawn());
+            builder.pos(world.getSpawn())
+                    .firstJoin(true);
             return builder.build();
         }
 
