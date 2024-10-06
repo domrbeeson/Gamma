@@ -237,26 +237,27 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
             return CompletableFuture.completedFuture(null);
         }
 
-        if (player.isLoading()) {
-            player.sendPacket(new LoginPacketOut(player.getEntityId(), format.getDimension()));
-        } else if (player.getProtocol() >= 12) { // Beta 1.6 test build 3
-            player.sendPacket(new PlayerRespawnPacketOut(format.getDimension()));
-        }
-        World oldWorld = player.getWorld();
-        if (oldWorld != this && oldWorld != null) {
-            oldWorld.removeViewer(player).join();
-        }
-        getEntitiesInChunkRange(null, player.getPos(), ENTITY_VIEW_DISTANCE_CHUNKS).forEach(entityInRange -> {
-            Entity<?> entity = entityInRange.entity();
-            entity.addViewer(player);
-            if (entity instanceof Player) {
-                player.addViewer((Player) entity);
+        return CompletableFuture.runAsync(() -> {
+            if (player.isLoading()) {
+                player.sendPacket(new LoginPacketOut(player.getEntityId(), format.getDimension()));
+            } else if (player.getProtocol() >= 12) { // Beta 1.6 test build 3
+                player.sendPacket(new PlayerRespawnPacketOut(format.getDimension()));
             }
+            World oldWorld = player.getWorld();
+            if (oldWorld != this && oldWorld != null) {
+                oldWorld.removeViewer(player).join();
+            }
+            getEntitiesInChunkRange(null, player.getPos(), ENTITY_VIEW_DISTANCE_CHUNKS).forEach(entityInRange -> {
+                Entity<?> entity = entityInRange.entity();
+                entity.addViewer(player);
+                if (entity instanceof Player) {
+                    player.addViewer((Player) entity);
+                }
+            });
+            viewers.add(player);
+            sendInitialChunksToPlayer(player).join();
+            player.spawn();
         });
-        viewers.add(player);
-        sendInitialChunksToPlayer(player).join();
-        player.spawn();
-        return CompletableFuture.completedFuture(null);
     }
 
     public CompletableFuture<Void> sendInitialChunksToPlayer(Player player) {
@@ -333,10 +334,6 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
         }
         spawn = possibleSpawns.get(ThreadLocalRandom.current().nextInt(possibleSpawns.size()));
         return spawn.add(0, 10, 0);
-    }
-
-    public Pos getPlayerSpawn(Player player) {
-        return getSpawn(); // TODO
     }
 
     public Pos getPlayerPos(Player player) {
