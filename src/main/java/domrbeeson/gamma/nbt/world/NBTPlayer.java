@@ -59,8 +59,16 @@ public class NBTPlayer implements Saveable, NBTCompoundCreator {
 		List<NBTTag> pos = compound.getList("Pos").getValue();
 		List<NBTTag> rotation = compound.getList("Rotation").getValue();
 		this.pos = new Pos(((NBTDouble) pos.get(0)).getValue(), ((NBTDouble) pos.get(1)).getValue(), ((NBTDouble) pos.get(2)).getValue(), ((NBTFloat) rotation.get(0)).getValue(), ((NBTFloat) rotation.get(1)).getValue());
-		sleepTimer = compound.getShort("SleepTimer").getValue();
-		sleeping = compound.getByte("Sleeping").getValue() == 1;
+		if (compound.hasField("SleepTimer")) {
+			sleepTimer = compound.getShort("SleepTimer").getValue();
+		} else {
+			sleepTimer = 0;
+		}
+		if (compound.hasField("Sleeping")) {
+			sleeping = compound.getByte("Sleeping").getValue() == 1;
+		} else {
+			sleeping = false;
+		}
 	}
 
 	public NBTPlayer(File playerDatFile, Player player) {
