@@ -22,7 +22,7 @@ public class ItemEntity extends HealthEntity<EntityMetadata> {
     private @Nullable ItemSpawnPacketOut spawnPacket = null;
 
     public ItemEntity(World world, Pos pos, Item item) {
-        super(EntityType.ITEM, world, pos, new EntityMetadata(), new CollisionBox(pos, 0.25, 0.25), 5);
+        super(EntityType.ITEM, world, pos, new EntityMetadata(), new CollisionBox(pos, 0.25, 0.25), (short) 5);
         this.item = item;
     }
 

@@ -16,7 +16,7 @@ public class GhastEntity extends LivingEntity<GhastMetadata> {
     }
 
     public GhastEntity(World world, Pos pos, GhastMetadata meta) {
-        super(EntityType.GHAST, world, pos, meta, new CollisionBox(pos, 4, 4), 10);
+        super(EntityType.GHAST, world, pos, meta, new CollisionBox(pos, 4, 4), (short) 10);
     }
     
 }

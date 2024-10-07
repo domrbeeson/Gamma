@@ -5,6 +5,7 @@ import domrbeeson.gamma.chat.ChatMessage;
 import domrbeeson.gamma.event.events.ServerStopEvent;
 import domrbeeson.gamma.network.SocketReader;
 import domrbeeson.gamma.network.SocketWriter;
+import domrbeeson.gamma.network.packet.out.PlayerKickPacketOut;
 import domrbeeson.gamma.version.MinecraftVersion;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,10 +72,16 @@ public class PlayerManager implements Closeable, Runnable {
         }
     }
 
-    public Player create(PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
+    public @Nullable Player create(PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
         Player player = PLAYERS_BY_USERNAME.get(username);
         if (player == null) {
-            player = new Player(server, connection, version, username, server.getWorldManager().getDefaultWorld(), joinMessage);
+            Player.Builder builder = Player.newBuilder(server, connection, username, version, joinMessage);
+            try {
+                player = server.getWorldManager().getDefaultWorld().getFormat().readPlayer(builder);
+            } catch (Exception e) {
+                connection.getWriter().send(version.features.protocol(), new PlayerKickPacketOut("Invalid player data!"));
+                return null;
+            }
             PLAYERS_BY_USERNAME.put(username, player);
             PLAYERS_BY_CONNECTION.put(connection, player);
             System.out.println(username + " joined [players: " + PLAYERS_BY_USERNAME.size() + "]");

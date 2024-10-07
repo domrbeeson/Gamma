@@ -17,7 +17,7 @@ public class WolfEntity extends LivingEntity<WolfMetadata> {
     }
 
     public WolfEntity(World world, Pos pos, WolfMetadata meta) {
-        super(EntityType.WOLF, world, pos, meta, new CollisionBox(pos, 0.6, 0.85), meta.isTamed() ? 40 : 8);
+        super(EntityType.WOLF, world, pos, meta, new CollisionBox(pos, 0.6, 0.85), meta.isTamed() ? (short) 40 : 8);
     }
 
     public void setAggressiveTowards(@Nullable Entity<?> entity) {

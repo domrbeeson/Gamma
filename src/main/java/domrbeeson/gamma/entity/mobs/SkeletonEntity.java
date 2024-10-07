@@ -16,7 +16,7 @@ public class SkeletonEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public SkeletonEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.SKELETON, world, pos, meta, new CollisionBox(pos, 0.6, 1.99), 20);
+        super(EntityType.SKELETON, world, pos, meta, new CollisionBox(pos, 0.6, 1.99), (short) 20);
     }
 
 }

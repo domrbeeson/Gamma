@@ -16,7 +16,7 @@ public class ZombieEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public ZombieEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.ZOMBIE, world, pos, meta, new CollisionBox(pos, 0.6, 1.95), 20);
+        super(EntityType.ZOMBIE, world, pos, meta, new CollisionBox(pos, 0.6, 1.95), (short) 20);
     }
 
 }

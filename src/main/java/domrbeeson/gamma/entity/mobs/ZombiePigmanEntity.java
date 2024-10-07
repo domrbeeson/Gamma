@@ -17,7 +17,7 @@ public class ZombiePigmanEntity extends LivingEntity<LivingEntityMetadata> {
     }
 
     public ZombiePigmanEntity(World world, Pos pos, LivingEntityMetadata meta) {
-        super(EntityType.ZOMBIE_PIGMAN, world, pos, meta, new CollisionBox(pos, 0.6, 1.95), 20);
+        super(EntityType.ZOMBIE_PIGMAN, world, pos, meta, new CollisionBox(pos, 0.6, 1.95), (short) 20);
     }
 
     public boolean isAngry() {

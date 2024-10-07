@@ -7,9 +7,9 @@ public abstract class HealthEntity<T extends EntityMetadata> extends Entity<T> {
 
     private final double maxHealth;
 
-    private double health;
+    private short health;
 
-    public HealthEntity(EntityType type, World world, Pos pos, T metadata, CollisionBox collisionBox, double maxHealth) {
+    public HealthEntity(EntityType type, World world, Pos pos, T metadata, CollisionBox collisionBox, short maxHealth) {
         super(type, world, pos, metadata, collisionBox);
         this.maxHealth = maxHealth;
         this.health = maxHealth;
@@ -19,11 +19,11 @@ public abstract class HealthEntity<T extends EntityMetadata> extends Entity<T> {
         return maxHealth;
     }
 
-    public double getHealth() {
+    public short getHealth() {
         return health;
     }
 
-    public void setHealth(double health) {
+    public void setHealth(short health) {
         this.health = health;
     }
 

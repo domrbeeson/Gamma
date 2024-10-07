@@ -28,11 +28,11 @@ public final class WorldManager implements Unloadable, Tickable {
         this.server = server;
     }
 
-    public void setDefaultWorld(@Nullable World world) {
+    public void setDefaultWorld(World world) {
         defaultWorld = world;
     }
 
-    public @Nullable World getDefaultWorld() {
+    public World getDefaultWorld() {
         return defaultWorld;
     }
 

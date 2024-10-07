@@ -13,19 +13,19 @@ public record Pos(double x, double y, double z, float yaw, float pitch) {
     }
 
     public Pos add(Pos pos) {
-        return new Pos(x + pos.x, y + pos.y, z + pos.z, pos.yaw, pos.pitch);
+        return new Pos(x + pos.x, y + pos.y, z + pos.z, yaw + pos.yaw, pitch + pos.pitch);
     }
 
     public Pos add(double x, double y, double z) {
-        return add(new Pos(x, y, z));
+        return add(new Pos(x, y, z, 0, 0));
     }
 
     public Pos add(float yaw, float pitch) {
-        return add(new Pos(x, y, z, this.yaw + yaw, this.pitch + pitch));
+        return add(new Pos(0, 0, 0, yaw, pitch));
     }
 
     public Pos add(int x, int y, int z) {
-        return add(new Pos(x, y, z));
+        return add(new Pos(x, y, z, 0, 0));
     }
 
     public Pos difference(Pos pos) {

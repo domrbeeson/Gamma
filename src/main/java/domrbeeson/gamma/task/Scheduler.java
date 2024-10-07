@@ -55,7 +55,7 @@ public class Scheduler implements Tickable {
         TASKS_PENDING.remove(time);
 
         tasks.forEach(task -> {
-            if (task.isCancelled()) {
+            if (task == null || task.isCancelled()) { // Not sure how a null task could exist here but turns out it can
                 return;
             }
 
