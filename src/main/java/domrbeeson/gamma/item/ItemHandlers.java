@@ -19,6 +19,12 @@ public class ItemHandlers {
     static {
         register(Material.WATER_BUCKET, new FluidBucketItemHandler(Material.WATER_FLOWING));
         register(Material.LAVA_BUCKET, new FluidBucketItemHandler(Material.LAVA_FLOWING));
+
+        for (int i = 0; i < HANDLERS.length; i++) {
+            if (HANDLERS[i] == null) {
+                HANDLERS[i] = EMPTY_ITEM_HANDLER;
+            }
+        }
     }
 
     public static void register(Material material, ItemHandler handler) {
@@ -31,9 +37,6 @@ public class ItemHandlers {
 
     public static ItemHandler getItemHandler(short id) {
         if (id >= HANDLERS.length || id < 0) {
-            return EMPTY_ITEM_HANDLER;
-        }
-        if (HANDLERS[id] == null) {
             return EMPTY_ITEM_HANDLER;
         }
         return HANDLERS[id];
