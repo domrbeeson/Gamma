@@ -52,8 +52,7 @@ public class AlphaWorldFormat extends NotchianWorldFormat {
                         sky = (byte) (nbtSkyLight[metaIndex] & 15);
                     }
 
-//                    builder.block(x, y, z, nbtBlocks[index], meta, sky, bl); // TODO the world file has weird lighting so for now just set it all to 15
-                    builder.block(x, y, z, nbtBlocks[index], meta, (byte) 15, bl);
+                    builder.block(x, y, z, nbtBlocks[index], meta, sky, bl);
                 }
             }
         }

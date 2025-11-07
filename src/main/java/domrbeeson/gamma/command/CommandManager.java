@@ -29,7 +29,9 @@ public final class CommandManager {
         register(new WorldCommand(server.getWorldManager()));
         register(new YCommand());
 
+
         register(new LightCommand());
+        register(new MaterialCommand());
     }
 
     public void register(Command command) {

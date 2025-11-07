@@ -17,6 +17,11 @@ public class TntBlockHandler extends PoweredBlockHandler {
     private final boolean flintAndSteel = false; // TODO
 
     @Override
+    public void onLeftClick(MinecraftServer server, Block block, Player player) {
+        block.chunk().setBlock(block.x(), block.y(), block.z(), Material.SPONGE);
+    }
+
+    @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         if (flintAndSteel) {
             return FLINT_AND_STEEL_DROPS;

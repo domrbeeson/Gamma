@@ -1,6 +1,7 @@
 package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.world.Chunk;
@@ -43,7 +44,7 @@ public class CactusBlockHandler extends PlantStackBlockHandler {
 
     @Override
     public void randomTick(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, long tick) {
-        BlockHandler above = server.getBlockHandlers().getBlockHandler(chunk.getBlockId(x, y + 1, z));
+        BlockHandler above = BlockHandlers.getBlockHandler(chunk.getBlockId(x, y + 1, z));
         if (above.isSolid()) {
             return;
         }

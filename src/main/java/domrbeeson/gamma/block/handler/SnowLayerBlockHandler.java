@@ -2,6 +2,7 @@ package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.item.Material;
 
 public class SnowLayerBlockHandler implements BlockHandler {
@@ -17,7 +18,7 @@ public class SnowLayerBlockHandler implements BlockHandler {
         int y = block.y();
         int z = block.z();
         byte blockBelowId = block.chunk().getBlockId(x, y - 1, z);
-        if (!server.getBlockHandlers().getBlockHandler(blockBelowId).isSolid()) {
+        if (!BlockHandlers.getBlockHandler(blockBelowId).isSolid()) {
             block.chunk().setBlock(x, y, z, Material.AIR);
             return true;
         }

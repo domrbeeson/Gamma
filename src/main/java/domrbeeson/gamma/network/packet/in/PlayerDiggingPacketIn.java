@@ -2,6 +2,7 @@ package domrbeeson.gamma.network.packet.in;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.network.packet.Packet;
 import domrbeeson.gamma.player.Player;
 import domrbeeson.gamma.player.PlayerConnection;
@@ -58,7 +59,7 @@ public class PlayerDiggingPacketIn extends WorldPacketIn {
         }
 
         if (status == Status.STARTED_DIGGING) {
-            getServer().getBlockHandlers().getBlockHandler(block.id()).onLeftClick(getServer(), block, player);
+            BlockHandlers.getBlockHandler(block.id()).onLeftClick(getServer(), block, player);
         } else if (status == Status.FINISHED_DIGGING) {
             chunk.breakBlockAsPlayer(player, x, y, z);
         }

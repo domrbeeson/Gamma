@@ -44,7 +44,7 @@ public interface BlockHandler {
 
     }
 
-    // TODO on walk for farmland and pressure plates?
+    // TODO onWalk for farmland and pressure plates?
 
     default List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte blockId, byte blockMetadata, short toolId) {
         return List.of();

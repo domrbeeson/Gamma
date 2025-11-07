@@ -1,6 +1,7 @@
 package domrbeeson.gamma.network.packet.in;
 
 import domrbeeson.gamma.MinecraftServer;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.block.handler.BlockHandler;
 import domrbeeson.gamma.entity.Pos;
 import domrbeeson.gamma.item.Item;
@@ -38,10 +39,11 @@ public class PlayerRightClickBlockPacketIn extends WorldPacketIn {
     public void handle() {
         // TODO validate clicked block is in range and where player is looking
 
-        if (direction < 0 || direction > 5) {
+        if (Direction.isInRange(this.direction)) {
             // Player clicked something out of range; cannot rely on this for distance checks because it's client-side but need to support it anyway
             return;
         }
+        Direction direction = Direction.getById(this.direction);
 
         Player player = getServer().getPlayerManager().get(getConnection());
         Chunk chunk = player.getWorld().getLoadedChunk(clickedX >> 4, clickedZ >> 4);
@@ -55,9 +57,9 @@ public class PlayerRightClickBlockPacketIn extends WorldPacketIn {
             byte finalY = clickedY;
             int finalZ = clickedZ;
 
-            BlockHandler clickedBlockHandler = getServer().getBlockHandlers().getBlockHandler(chunk.getBlockId(clickedX, clickedY, clickedZ));
+            BlockHandler clickedBlockHandler = BlockHandlers.getBlockHandler(chunk.getBlockId(clickedX, clickedY, clickedZ));
             if (clickedBlockHandler.isSolid()) { // TODO is this just solid blocks?
-                Pos adjusted = Direction.values()[direction].applyDirection(finalX, finalY, finalZ);
+                Pos adjusted = direction.applyDirection(finalX, finalY, finalZ);
                 finalX = adjusted.getBlockX();
                 finalY = (byte) adjusted.getBlockY(); // TODO will this cause problem with height limit?
                 finalZ = adjusted.getBlockZ();
@@ -75,7 +77,7 @@ public class PlayerRightClickBlockPacketIn extends WorldPacketIn {
                 player.getInventory().setHeldItem(Material.get(heldId, heldMetadata).getItem(heldItem.getAmount() - 1));
             }
         } else {
-            chunk.rightClickAsPlayer(player, clickedX, clickedY, clickedZ);
+            chunk.rightClickAsPlayer(player, clickedX, clickedY, clickedZ, direction);
         }
     }
 

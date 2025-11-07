@@ -1,6 +1,7 @@
 package domrbeeson.gamma.event.events.block;
 
 import domrbeeson.gamma.MinecraftServer;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.world.Chunk;
 
@@ -12,7 +13,7 @@ public class BlockBreakEvent extends BlockChangeEvent {
 
     public BlockBreakEvent(MinecraftServer server, Chunk chunk, int x, int y, int z, byte currentId, byte currentMetadata, boolean update) {
         super(chunk, x, y, z, currentId, currentMetadata, (byte) 0, (byte) 0, update);
-        drops = server.getBlockHandlers().getBlockHandler(currentId).getDrops(server, chunk, x, y, z, currentId, currentMetadata, (short) 0);
+        drops = BlockHandlers.getBlockHandler(currentId).getDrops(server, chunk, x, y, z, currentId, currentMetadata, (short) 0);
     }
 
     public List<Item> getDrops() {

@@ -20,6 +20,7 @@ import domrbeeson.gamma.event.events.player.PlayerBlockBreakEvent;
 import domrbeeson.gamma.event.events.player.PlayerBlockPlaceEvent;
 import domrbeeson.gamma.event.events.player.PlayerRightClickBlockEvent;
 import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.ItemHandlers;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.network.packet.out.BlockChangePacketOut;
 import domrbeeson.gamma.network.packet.out.ChunkPacketOut;
@@ -42,7 +43,6 @@ public class Chunk implements Tickable, Viewable {
 
     private final SplittableRandom random = new SplittableRandom();
     private final MinecraftServer server;
-    private final BlockHandlers blockHandlers;
     private final PreChunkPacketOut preChunkPacketLoad, preChunkPacketUnload;
     private final World world;
     private final int chunkX, chunkZ;
@@ -71,7 +71,6 @@ public class Chunk implements Tickable, Viewable {
         if (!world.getFormat().readChunk(builder)) {
             world.getGenerator().generate(builder);
         }
-        blockHandlers = server.getBlockHandlers();
         this.chunkX = builder.x;
         this.chunkZ = builder.z;
         this.timeSinceZeroPlayers = world.getTime();
@@ -289,7 +288,7 @@ public class Chunk implements Tickable, Viewable {
         if (!areCoordsInThisChunk(x, y, z)) {
             return false;
         }
-        if (!server.getBlockHandlers().getBlockHandler(id).canPlace(this, x, y, z)) {
+        if (!BlockHandlers.getBlockHandler(id).canPlace(this, x, y, z)) {
             return false;
         }
         Map<Long, BlockChangeEvent> blocks = scheduledBlockChanges.computeIfAbsent(server.getTick() + 1, t -> new HashMap<>());
@@ -297,12 +296,12 @@ public class Chunk implements Tickable, Viewable {
         return true;
     }
 
-    public void rightClickAsPlayer(Player player, int x, int y, int z) {
+    public void rightClickAsPlayer(Player player, int x, int y, int z, Direction direction) {
         if (!areCoordsInThisChunk(x, y, z)) {
             return;
         }
         Map<Long, PlayerRightClickBlockEvent> events = scheduledBlockRightClicks.computeIfAbsent(server.getTick() + 1, t -> new HashMap<>());
-        events.put(packChunkBlockCoords(x, y, z), new PlayerRightClickBlockEvent(player, x, y, z, player.getInventory().getHeldItem()));
+        events.put(packChunkBlockCoords(x, y, z), new PlayerRightClickBlockEvent(player, x, y, z, direction, player.getInventory().getHeldItem()));
     }
 
     public static long packChunkBlockCoords(int x, int y, int z) {
@@ -437,7 +436,7 @@ public class Chunk implements Tickable, Viewable {
                     return;
                 }
 
-                server.getBlockHandlers().getBlockHandler(block.id()).update(server, block, ticks);
+                BlockHandlers.getBlockHandler(block.id()).update(server, block, ticks);
             });
             scheduledBlockUpdates.remove(ticks);
         }
@@ -461,9 +460,9 @@ public class Chunk implements Tickable, Viewable {
                         Item heldItem = pbbe.getPlayer().getInventory().getHeldItem();
                         pbbe.getPlayer().getInventory().setHeldItem(heldItem.getMaterial().getItem());
                     }
-                    blockHandlers.getBlockHandler(event.getCurrentId()).onBreak(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata());
+                    BlockHandlers.getBlockHandler(event.getCurrentId()).onBreak(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata());
 
-                    List<Item> drops = blockHandlers.getBlockHandler(event.getCurrentId()).getDrops(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata(), toolId);
+                    List<Item> drops = BlockHandlers.getBlockHandler(event.getCurrentId()).getDrops(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata(), toolId);
                     BlockDropItemEvent dropItemEvent = new BlockDropItemEvent(this, x, y, z, event.getCurrentId(), event.getCurrentMetadata(), drops);
                     final Pos itemSpawnPos = new Pos(x + 0.5, y + 0.5, z + 0.5);
                     dropItemEvent.getDrops().forEach(item -> {
@@ -475,11 +474,11 @@ public class Chunk implements Tickable, Viewable {
                         }
                     });
                 } else if (event instanceof PlayerBlockPlaceEvent playerBlockPlaceEvent) {
-                    if (!blockHandlers.getBlockHandler(event.getNewId()).canPlace(this, x, y, z)) {
+                    if (!BlockHandlers.getBlockHandler(event.getNewId()).canPlace(this, x, y, z)) {
                         playerBlockPlaceEvent.getPlayer().sendPacket(new BlockChangePacketOut(event.getX(), event.getY(), event.getZ(), event.getNewId(), event.getNewMetadata()));
                         return;
                     }
-                    blockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, this, x, y, z, event.getNewId(), event.getNewMetadata(), event.getClickedX(), event.getClickedY(), event.getClickedZ(), playerBlockPlaceEvent.getPlayer());
+                    BlockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, this, x, y, z, event.getNewId(), event.getNewMetadata(), event.getClickedX(), event.getClickedY(), event.getClickedZ(), playerBlockPlaceEvent.getPlayer());
                 }
 
                 byte relativeX = Block.getChunkRelativeCoord(x);
@@ -497,7 +496,7 @@ public class Chunk implements Tickable, Viewable {
                     BlockUpdateEvent updateEvent = new BlockUpdateEvent(ticks, block);
                     world.call(updateEvent);
                     if (!updateEvent.isCancelled()) {
-                        server.getBlockHandlers().getBlockHandler(event.getNewId()).update(server, block, ticks);
+                        BlockHandlers.getBlockHandler(event.getNewId()).update(server, block, ticks);
                     }
 
                     // Update adjacent blocks
@@ -539,7 +538,9 @@ public class Chunk implements Tickable, Viewable {
                 int x = event.getX();
                 int y = event.getY();
                 int z = event.getZ();
-                blockHandlers.getBlockHandler(getBlockId(x, y, z)).onRightClick(server, getBlock(x, y, z), event.getPlayer());
+                if (!BlockHandlers.getBlockHandler(getBlockId(x, y, z)).onRightClick(server, getBlock(x, y, z), event.getPlayer())) {
+                    ItemHandlers.getItemHandler(event.getHeldItem().getId()).use(event);
+                }
             });
             scheduledBlockRightClicks.remove(ticks);
         }
@@ -569,7 +570,7 @@ public class Chunk implements Tickable, Viewable {
                     continue;
                 }
                 metadata = getBlockMetadata(randomX, randomY, randomZ);
-                blockHandlers.getBlockHandler(blockId).randomTick(server, this, WIDTH * chunkX + randomX, randomY, WIDTH * chunkZ + randomZ, blockId, metadata, ticks);
+                BlockHandlers.getBlockHandler(blockId).randomTick(server, this, WIDTH * chunkX + randomX, randomY, WIDTH * chunkZ + randomZ, blockId, metadata, ticks);
             }
         }
 

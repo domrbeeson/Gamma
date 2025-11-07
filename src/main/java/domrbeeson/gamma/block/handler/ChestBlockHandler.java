@@ -2,6 +2,7 @@ package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.block.tile.ChestTileEntity;
 import domrbeeson.gamma.event.events.block.BlockChangeEvent;
 import domrbeeson.gamma.item.Item;
@@ -42,7 +43,7 @@ public class ChestBlockHandler extends TileEntityBlockHandler<ChestTileEntity> {
 
     @Override
     public boolean onRightClick(MinecraftServer server, Block block, Player player) {
-        if (server.getBlockHandlers().getBlockHandler(block.chunk().getBlockId(block.x(), block.y() + 1, block.z())).isSolid()) {
+        if (BlockHandlers.getBlockHandler(block.chunk().getBlockId(block.x(), block.y() + 1, block.z())).isSolid()) {
             return false;
         }
         ChestTileEntity tile = getTileEntity(block.chunk(), block.x(), block.y(), block.z());

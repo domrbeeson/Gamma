@@ -1,6 +1,5 @@
 package domrbeeson.gamma;
 
-import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.chat.ChatMessage;
 import domrbeeson.gamma.command.CommandManager;
 import domrbeeson.gamma.command.ConsoleCommandReader;
@@ -16,7 +15,7 @@ import domrbeeson.gamma.task.tasks.TpsTask;
 import domrbeeson.gamma.world.World;
 import domrbeeson.gamma.world.WorldManager;
 import domrbeeson.gamma.world.format.AlphaWorldFormat;
-import domrbeeson.gamma.world.terrain.DebugGenerator;
+import domrbeeson.gamma.world.terrain.AlphaGenerator;
 
 public final class MinecraftServer extends EventGroup<Event.GlobalEvent> implements Stoppable {
 
@@ -28,7 +27,6 @@ public final class MinecraftServer extends EventGroup<Event.GlobalEvent> impleme
     private final PlayerManager playerManager = new PlayerManager(this);
     private final Scheduler scheduler = new Scheduler();
     private final RecipeManager recipeManager = new RecipeManager();
-    private final BlockHandlers blockHandlers = new BlockHandlers(this);
     private final CommandManager commandManager = new CommandManager(this);
     private final ConsoleCommandReader consoleReader = new ConsoleCommandReader(this, commandManager);
     private final TpsTask tpsTask = new TpsTask();
@@ -37,7 +35,7 @@ public final class MinecraftServer extends EventGroup<Event.GlobalEvent> impleme
     private long tick = 0;
 
     public MinecraftServer() throws InterruptedException {
-        World defaultWorld = worldManager.loadOrCreateWorld(SERVER_SETTINGS.getDefaultWorldName(), new AlphaWorldFormat(), new DebugGenerator());
+        World defaultWorld = worldManager.loadOrCreateWorld(SERVER_SETTINGS.getDefaultWorldName(), new AlphaWorldFormat(), new AlphaGenerator());
         if (defaultWorld != null) {
             defaultWorld.setViewDistance(SERVER_SETTINGS.getViewDistance());
             worldManager.setDefaultWorld(defaultWorld);
@@ -109,10 +107,6 @@ public final class MinecraftServer extends EventGroup<Event.GlobalEvent> impleme
 
     public RecipeManager getRecipeManager() {
         return recipeManager;
-    }
-
-    public BlockHandlers getBlockHandlers() {
-        return blockHandlers;
     }
 
     public void broadcast(ChatMessage message) {

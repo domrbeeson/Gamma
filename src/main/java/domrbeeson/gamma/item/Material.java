@@ -101,7 +101,7 @@ public enum Material {
     DIAMOND_ORE(56),
     DIAMOND_BLOCK(57),
     CRAFTING_TABLE(58),
-    WHEAT_CROPS(builder(59).itemCreator((metadata, amount) -> {
+    WHEAT_CROPS(builder(59).maxDurability(7).itemCreator((metadata, amount) -> {
         if (metadata == WheatBlockHandler.FULLY_GROWN_METADATA) {
             return new Item((short) 296, (short) 0, amount);
         } else {
@@ -111,7 +111,7 @@ public enum Material {
     FARMLAND(60),
     FURNACE(61),
     FURNACE_BURNING(62),
-    SIGN_POST(63),
+    SIGN_POST(63), // TODO fix placing sign posts making chunks invalid and not load after a server restart
     OAK_DOOR_BOTTOM(64),
     LADDER(65),
     RAIL(66),
@@ -274,7 +274,7 @@ public enum Material {
 
     public final short id;
     public final short metadata; // This is an alias of metadataMin
-    public final short metadataMin, metadataMax;
+    public final short metadataMin, metadataMax; // This is used for tool durability
     public final boolean block;
     public final short maxStack;
     public final byte blockId;
@@ -283,7 +283,7 @@ public enum Material {
     private final ItemCreator itemCreator;
 
     Material(int id) {
-        this((short) id, (short) 0, (byte) 64, (byte) 0, new CraftingRecipe[0], null);
+        this((short) id, (short) 0, (byte) 64, id >= Byte.MAX_VALUE ? -1 : (byte) id, new CraftingRecipe[0], null);
     }
 
     Material(Builder builder) {
@@ -301,13 +301,12 @@ public enum Material {
         this.metadataMax = metadataMax;
         this.maxStack = maxStack;
         this.recipes = recipes;
+        this.blockId = blockId;
 
-        block = id <= Byte.MAX_VALUE;
+        block = blockId >= 0;
         if (block) {
-            this.blockId = (byte) id;
             this.blockOpacity = blockOpacity;
         } else {
-            this.blockId = blockId;
             this.blockOpacity = 0;
         }
 
@@ -349,8 +348,8 @@ public enum Material {
 
     static {
         for (Material material : values()) {
-            for (short i = material.metadataMin; i <= material.metadataMax; i++) {
-                MATERIAL_BY_ID_AND_META.put(material.id << 16 | i, material);
+            for (short meta = material.metadataMin; meta <= material.metadataMax; meta++) {
+                MATERIAL_BY_ID_AND_META.put(material.id << 16 | meta, material);
             }
         }
     }
@@ -368,6 +367,9 @@ public enum Material {
 
         public Builder(int id) {
             this.id = (short) id;
+            if (id < Byte.MAX_VALUE) {
+                this.blockId = (byte) id;
+            }
         }
 
         public Builder metadata(int metadata) {

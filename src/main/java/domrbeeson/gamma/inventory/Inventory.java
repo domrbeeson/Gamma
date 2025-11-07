@@ -274,7 +274,7 @@ public abstract class Inventory implements Tickable, Viewable {
     @Override
     public void addViewer(Player player) {
         if (viewers.add(player)) {
-            player.sendPacket(new WindowOpenPacketOut(this));
+//            player.sendPacket(new WindowOpenPacketOut(this)); // TODO broken?
             onOpen(player);
             for (short slot = 0; slot < items.length; slot++) {
                 if (items[slot] == null || items[slot].getId() == 0) {

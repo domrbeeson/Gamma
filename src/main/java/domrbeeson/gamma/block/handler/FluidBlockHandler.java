@@ -2,6 +2,7 @@ package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.Dimension;
 import domrbeeson.gamma.world.Direction;
@@ -115,33 +116,33 @@ public class FluidBlockHandler implements BlockHandler {
 
         for (int i = 1; i < checkDistance; i++) {
             Block block = world.getBlock(x + i, y, z);
-            if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+            if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                 block = world.getBlock(x + i, y - 1, z);
-                if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+                if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                     return Direction.WEST;
                 }
             }
 
             block = world.getBlock(x - i, y, z);
-            if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+            if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                 block = world.getBlock(x - i, y - 1, z);
-                if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+                if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                     return Direction.EAST;
                 }
             }
 
             block = world.getBlock(x, y, z + i);
-            if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+            if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                 block = world.getBlock(x, y - 1, z + i);
-                if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+                if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                     return Direction.NORTH;
                 }
             }
 
             block = world.getBlock(x, y, z - i);
-            if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+            if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                 block = world.getBlock(x, y - 1, z - i);
-                if (world.getServer().getBlockHandlers().getBlockHandler(block.id()).isPermeable()) {
+                if (BlockHandlers.getBlockHandler(block.id()).isPermeable()) {
                     return Direction.SOUTH;
                 }
             }
@@ -165,7 +166,7 @@ public class FluidBlockHandler implements BlockHandler {
                 return false;
             }
         }
-        if (!world.getServer().getBlockHandlers().getBlockHandler(chunk.getBlockId(x, y, z)).isPermeable()) {
+        if (!BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z)).isPermeable()) {
             return false;
         }
 

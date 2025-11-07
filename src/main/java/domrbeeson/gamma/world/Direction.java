@@ -15,10 +15,28 @@ public enum Direction {
 
     private final int xOffset, yOffset, zOffset;
 
+    private static final Direction[] DIRECTIONS;
+
     Direction(int xOffset, int yOffset, int zOffset) {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.zOffset = zOffset;
+    }
+
+    static {
+        DIRECTIONS = new Direction[values().length];
+        for (Direction dir : values()) {
+            DIRECTIONS[dir.ordinal()] = dir;
+        }
+
+    }
+
+    public static Direction getById(int id) {
+        return DIRECTIONS[id];
+    }
+
+    public static boolean isInRange(int id) {
+        return id > 0 && id <= 5;
     }
 
     public Pos applyDirection(int x, int y, int z) {

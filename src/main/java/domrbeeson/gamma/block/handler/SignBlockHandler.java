@@ -10,7 +10,6 @@ import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.player.Player;
 import domrbeeson.gamma.world.Chunk;
-import domrbeeson.gamma.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -45,7 +44,9 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
             event.setNewMetadata(Direction.EAST.getMetadata());
         } else {
             event.setNewId(Material.SIGN_POST.blockId);
-            event.setNewMetadata((byte) Math.floor((player.getPos().yaw() + 180f) / 22.5 + 0.5));
+            byte meta = (byte) Math.floor((player.getPos().yaw() + 180f) / 22.5 + 0.5);
+            server.broadcast("sign rotation: " + meta);
+            event.setNewMetadata(meta);
         }
 
         player.setEditingSign(new Pos(x, y, z));
@@ -58,14 +59,13 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
 
     @Override
     public boolean update(MinecraftServer server, Block block, long tick) {
-        BlockHandlers blockHandlers = server.getBlockHandlers();
         Chunk chunk = block.chunk();
         int x = block.x();
         int y = block.y();
         int z = block.z();
         switch (block.material()) {
             case SIGN_POST -> {
-                if (!blockHandlers.getBlockHandler(chunk.getBlockId(x, y - 1, z)).isSolid()) {
+                if (!BlockHandlers.getBlockHandler(chunk.getBlockId(x, y - 1, z)).isSolid()) {
                     chunk.breakBlock(x, y, z);
                     return true;
                 }
@@ -73,25 +73,25 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
             case WALL_SIGN -> {
                 switch (Direction.getDirectionFromMetadata(block.metadata())) { // Could just use numbers but getting the Direction is more readable
                     case SOUTH:
-                        if (blockHandlers.getBlockHandler(chunk.getBlockId(x, y, z - 1)).isSolid()) {
+                        if (BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z - 1)).isSolid()) {
                             chunk.breakBlock(x, y, z);
                             return true;
                         }
                         break;
                     case WEST:
-                        if (blockHandlers.getBlockHandler(chunk.getBlockId(x + 1, y, z)).isSolid()) {
+                        if (BlockHandlers.getBlockHandler(chunk.getBlockId(x + 1, y, z)).isSolid()) {
                             chunk.breakBlock(x, y, z);
                             return true;
                         }
                         break;
                     case EAST:
-                        if (blockHandlers.getBlockHandler(chunk.getBlockId(x - 1, y, z)).isSolid()) {
+                        if (BlockHandlers.getBlockHandler(chunk.getBlockId(x - 1, y, z)).isSolid()) {
                             chunk.breakBlock(x, y, z);
                             return true;
                         }
                         break;
                     default:
-                        if (blockHandlers.getBlockHandler(chunk.getBlockId(x, y, z + 1)).isSolid()) {
+                        if (BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z + 1)).isSolid()) {
                             chunk.breakBlock(x, y, z);
                             return true;
                         }

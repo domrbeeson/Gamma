@@ -2,6 +2,7 @@ package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.player.Player;
@@ -31,7 +32,7 @@ public class FarmlandBlockHandler implements BlockHandler {
             block.chunk().setBlock(block.x(), block.y(), block.z(), Material.FARMLAND);
             return true;
         } else if (heldItem.getMaterial() == Material.WHEAT_SEEDS) {
-            BlockHandler aboveBlock = server.getBlockHandlers().getBlockHandler(block.chunk().getBlockId(block.x(), block.y() + 1, block.z()));
+            BlockHandler aboveBlock = BlockHandlers.getBlockHandler(block.chunk().getBlockId(block.x(), block.y() + 1, block.z()));
             if (!aboveBlock.isSolid()) {
                 block.world().setBlock(block.x(), block.y() + 1, block.z(), Material.WHEAT_CROPS);
                 return true;

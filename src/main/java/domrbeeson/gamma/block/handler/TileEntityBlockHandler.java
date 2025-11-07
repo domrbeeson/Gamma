@@ -19,7 +19,6 @@ public abstract class TileEntityBlockHandler<T extends TileEntity> implements Bl
             return;
         }
         chunk.removeTileEntity(tile);
-        BlockHandler.super.onBreak(server, chunk, x, y, z, id, metadata);
     }
 
     public T getTileEntity(Chunk chunk, int x, int y, int z) {

@@ -370,6 +370,9 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
 
     // Protection against sending sign update packets for random signs
     public boolean isEditingSign(Pos pos) {
+        if (pos == null) {
+            return false;
+        }
         return pos.equals(editingSign);
     }
 

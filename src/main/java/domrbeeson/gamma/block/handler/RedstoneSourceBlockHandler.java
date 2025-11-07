@@ -2,6 +2,7 @@ package domrbeeson.gamma.block.handler;
 
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
+import domrbeeson.gamma.block.BlockHandlers;
 import domrbeeson.gamma.item.Material;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public abstract class RedstoneSourceBlockHandler implements BlockHandler {
         while (!blocksToUpdate.isEmpty()) {
             List<Block> newBlocksToUpdate = new ArrayList<>();
             for (Block b : blocksToUpdate) {
-                if (server.getBlockHandlers().getBlockHandler(b.id()).canPower()) {
+                if (BlockHandlers.getBlockHandler(b.id()).canPower()) {
                     if (!checkedBlocks.contains(b)) {
                         newBlocksToUpdate.add(b);
                     }

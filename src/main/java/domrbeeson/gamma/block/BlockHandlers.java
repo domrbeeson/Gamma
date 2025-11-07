@@ -1,6 +1,5 @@
 package domrbeeson.gamma.block;
 
-import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.handler.*;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.world.Dimension;
@@ -15,11 +14,11 @@ public final class BlockHandlers {
             return false;
         }
     }
+
     private static final EmptyBlockHandler EMPTY_BLOCK_HANDLER = new EmptyBlockHandler();
+    private static final BlockHandler[] HANDLERS = new BlockHandler[96];
 
-    private final BlockHandler[] handlers = new BlockHandler[96];
-
-    public BlockHandlers(MinecraftServer server) {
+    static {
         AttachedBlockHandler attachedBlockHandler = new AttachedBlockHandler();
         MushroomBlockHandler mushroomBlockHandler = new MushroomBlockHandler();
         FluidBlockHandler waterBlockHandler = new FluidBlockHandler(Material.WATER_SOURCE.blockId, Material.WATER_FLOWING.blockId, 5, (byte) 1);
@@ -87,30 +86,32 @@ public final class BlockHandlers {
 
         register(Material.SNOW_LAYER, new SnowLayerBlockHandler());
 
-        for (int i = 0; i < handlers.length; i++) {
-            if (handlers[i] != null) {
+        register(Material.TNT, new TntBlockHandler());
+
+        for (int i = 0; i < HANDLERS.length; i++) {
+            if (HANDLERS[i] != null) {
                 continue;
             }
-            handlers[i] = EMPTY_BLOCK_HANDLER;
+            HANDLERS[i] = EMPTY_BLOCK_HANDLER;
         }
     }
 
-    public void register(Material material, BlockHandler handler) {
-        handlers[material.blockId] = handler;
+    public static void register(Material material, BlockHandler handler) {
+        HANDLERS[material.blockId] = handler;
     }
 
-    public void unregister(short id) {
-        handlers[id] = null;
+    public static void unregister(short id) {
+        HANDLERS[id] = null;
     }
 
-    public BlockHandler getBlockHandler(byte id) {
-        if (id >= handlers.length || id < 0) {
+    public static BlockHandler getBlockHandler(byte id) {
+        if (id >= HANDLERS.length || id < 0) {
             return EMPTY_BLOCK_HANDLER;
         }
-        return handlers[id];
+        return HANDLERS[id];
     }
 
-    public BlockHandler getBlockHandler(Material material) {
+    public static BlockHandler getBlockHandler(Material material) {
         return getBlockHandler(material.blockId);
     }
 

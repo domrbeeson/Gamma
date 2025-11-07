@@ -1,6 +1,5 @@
 package domrbeeson.gamma.block;
 
-import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.handler.BlockHandler;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.world.Chunk;
@@ -22,8 +21,8 @@ public record Block(
         return Material.get(id, metadata);
     }
 
-    public BlockHandler getHandler(MinecraftServer server) {
-        return server.getBlockHandlers().getBlockHandler(id);
+    public BlockHandler getHandler() {
+        return BlockHandlers.getBlockHandler(id);
     }
 
     public static byte getChunkRelativeCoord(int xOrZ) {
