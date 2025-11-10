@@ -36,7 +36,7 @@ public enum Direction {
     }
 
     public static boolean isInRange(int id) {
-        return id > 0 && id <= 5;
+        return id >= 0 && id <= 5;
     }
 
     public Pos applyDirection(int x, int y, int z) {
