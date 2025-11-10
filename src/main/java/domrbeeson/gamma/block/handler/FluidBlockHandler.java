@@ -3,6 +3,7 @@ package domrbeeson.gamma.block.handler;
 import domrbeeson.gamma.MinecraftServer;
 import domrbeeson.gamma.block.Block;
 import domrbeeson.gamma.block.BlockHandlers;
+import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.Dimension;
 import domrbeeson.gamma.world.Direction;
@@ -64,7 +65,6 @@ public class FluidBlockHandler implements BlockHandler {
 
     @Override
     public boolean update(MinecraftServer server, Block block, long ticks) {
-        // TODO this shit makes memory usage go nuts
         int x = block.x();
         int y = block.y();
         int z = block.z();
@@ -74,33 +74,26 @@ public class FluidBlockHandler implements BlockHandler {
         }
 
         World world = block.world();
-        if (flow(ticks, world, x, y - 1, z, (byte) 0)) {
-            // Fluids do not continue flowing on this Y level after reaching a hole
-            return true;
-        }
-
         byte height = (byte) (block.metadata() + dropoff.get(world.getFormat().getDimension()));
-        if (height >= MAX_FLOW_DISTANCE) {
-            return false;
+        if (height < MAX_FLOW_DISTANCE && (block.id() == Material.WATER_SOURCE.blockId || block.id() == Material.LAVA_SOURCE.blockId)) {
+            flowToBlock(ticks, world, x + 1, y, z, height);
+            flowToBlock(ticks, world, x - 1, y, z, height);
+            flowToBlock(ticks, world, x, y, z + 1, height);
+            flowToBlock(ticks, world, x, y, z - 1, height);
         }
 
-        Direction holeDirection = getHoleDirection(block.world(), x, y, z, height);
-        if (holeDirection == null) {
+        byte belowBlockId = block.chunk().getBlockId(x, y - 1, z);
+        BlockHandler belowBlockHandler = BlockHandlers.getBlockHandler(belowBlockId);
+        if (belowBlockHandler.isPermeable()) {
+            flowToBlock(ticks, world, x, y - 1, z, (byte) 0);
             return true;
         }
-//        System.out.println("hole direction: " + holeDirection.name());
 
-        if (holeDirection == Direction.WEST || holeDirection == Direction.NONE) {
-            flow(ticks, world, x + 1, y, z, height);
-        }
-        if (holeDirection == Direction.EAST || holeDirection == Direction.NONE) {
-            flow(ticks, world, x - 1, y, z, height);
-        }
-        if (holeDirection == Direction.NORTH || holeDirection == Direction.NONE) {
-            flow(ticks, world, x, y, z + 1, height);
-        }
-        if (holeDirection == Direction.SOUTH || holeDirection == Direction.NONE) {
-            flow(ticks, world, x, y, z - 1, height);
+        if (height < MAX_FLOW_DISTANCE) {
+            flowToBlock(ticks, world, x + 1, y, z, height);
+            flowToBlock(ticks, world, x - 1, y, z, height);
+            flowToBlock(ticks, world, x, y, z + 1, height);
+            flowToBlock(ticks, world, x, y, z - 1, height);
         }
 
         return true;
@@ -151,7 +144,7 @@ public class FluidBlockHandler implements BlockHandler {
         return Direction.NONE;
     }
 
-    private boolean flow(long ticks, World world, int x, int y, int z, byte newHeight) {
+    private boolean flowToBlock(long ticks, World world, int x, int y, int z, byte newHeight) {
         // Fluids do not load new chunks
         Chunk chunk = world.getLoadedChunk(x >> 4, z >> 4);
         if (chunk == null) {
@@ -166,16 +159,17 @@ public class FluidBlockHandler implements BlockHandler {
                 return false;
             }
         }
-        if (!BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z)).isPermeable()) {
+        BlockHandler blockHandler = BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z));
+        if (!blockHandler.isPermeable() || blockHandler.isSolid()) {
             return false;
         }
 
-        long nextUpdate = getTicksUntilNextUpdate(ticks, world.getFormat().getDimension());
         if (getSourceBlocksAdjacent(world, x, y, z) >= 2) {
             chunk.setBlock(x, y, z, sourceBlockId, (byte) 0, true);
         } else {
             chunk.setBlock(x, y, z, flowingBlockId, newHeight, true);
         }
+        long nextUpdate = getTicksUntilNextUpdate(ticks, world.getFormat().getDimension());
         chunk.scheduleBlockUpdate(x, y, z, nextUpdate);
         return true;
     }
@@ -193,18 +187,23 @@ public class FluidBlockHandler implements BlockHandler {
     private int getSourceBlocksAdjacent(World world, int x, int y, int z) {
         int sources = 0;
         Chunk chunk;
+
         chunk = world.getLoadedChunk((x + 1) << 4, z << 4);
         if (chunk != null) {
             sources += chunk.getBlockId(x + 1, y, z) == sourceBlockId ? 1 : 0;
         }
+
         chunk = world.getLoadedChunk(x << 4, (z + 1) << 4);
         if (chunk != null) {
             sources += chunk.getBlockId(x, y, z + 1) == sourceBlockId ? 1 : 0;
         }
+
         chunk = world.getLoadedChunk((x - 1) << 4, z << 4);
         if (chunk != null) {
             sources += chunk.getBlockId(x - 1, y, z) == sourceBlockId ? 1 : 0;
         }
+
+        chunk = world.getLoadedChunk(x << 4, (z - 1) << 4);
         if (chunk != null) {
             sources += chunk.getBlockId(x, y, z - 1) == sourceBlockId ? 1 : 0;
         }
