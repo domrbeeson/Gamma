@@ -39,7 +39,7 @@ public class PlayerRightClickBlockPacketIn extends WorldPacketIn {
     public void handle() {
         // TODO validate clicked block is in range and where player is looking
 
-        if (Direction.isInRange(this.direction)) {
+        if (!Direction.isInRange(this.direction)) {
             // Player clicked something out of range; cannot rely on this for distance checks because it's client-side but need to support it anyway
             return;
         }
