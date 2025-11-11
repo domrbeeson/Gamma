@@ -1,6 +1,7 @@
 package domrbeeson.gamma.item;
 
 import domrbeeson.gamma.event.events.player.PlayerRightClickBlockEvent;
+import domrbeeson.gamma.item.handlers.EmptyBucketItemHandler;
 import domrbeeson.gamma.item.handlers.FluidBucketItemHandler;
 import domrbeeson.gamma.item.handlers.ItemHandler;
 
@@ -17,8 +18,9 @@ public class ItemHandlers {
     private static final ItemHandler[] HANDLERS = new ItemHandler[2257];
 
     static {
-        register(Material.WATER_BUCKET, new FluidBucketItemHandler(Material.WATER_FLOWING));
-        register(Material.LAVA_BUCKET, new FluidBucketItemHandler(Material.LAVA_FLOWING));
+        register(Material.BUCKET, new EmptyBucketItemHandler());
+        register(Material.WATER_BUCKET, new FluidBucketItemHandler(Material.WATER_SOURCE, false));
+        register(Material.LAVA_BUCKET, new FluidBucketItemHandler(Material.LAVA_SOURCE, true));
 
         for (int i = 0; i < HANDLERS.length; i++) {
             if (HANDLERS[i] == null) {

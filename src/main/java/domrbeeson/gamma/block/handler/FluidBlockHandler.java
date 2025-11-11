@@ -75,6 +75,16 @@ public class FluidBlockHandler implements BlockHandler {
 
         World world = block.world();
         byte height = (byte) (block.metadata() + dropoff.get(world.getFormat().getDimension()));
+
+        if (shouldDrain(block.world(), block.id(), block.metadata(), x, y, z)) {
+            if (height >= MAX_FLOW_DISTANCE) {
+                block.chunk().setBlock(x, y, z, Material.AIR);
+            } else {
+                block.chunk().setBlock(x, y, z, block.id(), height);
+            }
+            return true;
+        }
+
         if (height < MAX_FLOW_DISTANCE && (block.id() == Material.WATER_SOURCE.blockId || block.id() == Material.LAVA_SOURCE.blockId)) {
             flowToBlock(ticks, world, x + 1, y, z, height);
             flowToBlock(ticks, world, x - 1, y, z, height);
@@ -94,6 +104,52 @@ public class FluidBlockHandler implements BlockHandler {
             flowToBlock(ticks, world, x - 1, y, z, height);
             flowToBlock(ticks, world, x, y, z + 1, height);
             flowToBlock(ticks, world, x, y, z - 1, height);
+        }
+
+        return true;
+    }
+
+    private boolean shouldDrain(World world, byte id, byte meta, int x, int y, int z) {
+        if (id == sourceBlockId) {
+            return false;
+        }
+
+        byte checkId;
+
+        checkId = world.getChunk(x >> 4, z >> 4).getBlockId(x, y + 1, z);
+        if (checkId == sourceBlockId || checkId == flowingBlockId) {
+            return false;
+        }
+
+        Chunk chunk;
+        byte checkMeta;
+
+        chunk = world.getChunk((x + 1) >> 4, z >> 4);
+        checkId = chunk.getBlockId(x + 1, y, z);
+        checkMeta = chunk.getBlockMetadata(x + 1, y, z);
+        if ((checkId == sourceBlockId || checkId == flowingBlockId) && meta > checkMeta) {
+            return false;
+        }
+
+        chunk = world.getChunk((x - 1) >> 4, z >> 4);
+        checkId = chunk.getBlockId(x - 1, y, z);
+        checkMeta = chunk.getBlockMetadata(x - 1, y, z);
+        if ((checkId == sourceBlockId || checkId == flowingBlockId) && meta > checkMeta) {
+            return false;
+        }
+
+        chunk = world.getChunk(x >> 4, (z + 1) >> 4);
+        checkId = chunk.getBlockId(x, y, z + 1);
+        checkMeta = chunk.getBlockMetadata(x, y, z + 1);
+        if ((checkId == sourceBlockId || checkId == flowingBlockId) && meta > checkMeta) {
+            return false;
+        }
+
+        chunk = world.getChunk(x >> 4, (z - 1) >> 4);
+        checkId = chunk.getBlockId(x, y, z - 1);
+        checkMeta = chunk.getBlockMetadata(x, y, z - 1);
+        if ((checkId == sourceBlockId || checkId == flowingBlockId) && meta > checkMeta) {
+            return false;
         }
 
         return true;
@@ -144,24 +200,24 @@ public class FluidBlockHandler implements BlockHandler {
         return Direction.NONE;
     }
 
-    private boolean flowToBlock(long ticks, World world, int x, int y, int z, byte newHeight) {
+    private void flowToBlock(long ticks, World world, int x, int y, int z, byte newHeight) {
         // Fluids do not load new chunks
         Chunk chunk = world.getLoadedChunk(x >> 4, z >> 4);
         if (chunk == null) {
-            return false;
+            return;
         }
         byte blockId = chunk.getBlockId(x, y, z);
         if (blockId == sourceBlockId) {
-            return true;
+            return;
         }
         if (blockId == flowingBlockId) {
             if (chunk.getBlockMetadata(x, y, z) <= newHeight) {
-                return false;
+                return;
             }
         }
         BlockHandler blockHandler = BlockHandlers.getBlockHandler(chunk.getBlockId(x, y, z));
         if (!blockHandler.isPermeable() || blockHandler.isSolid()) {
-            return false;
+            return;
         }
 
         if (getSourceBlocksAdjacent(world, x, y, z) >= 2) {
@@ -171,7 +227,6 @@ public class FluidBlockHandler implements BlockHandler {
         }
         long nextUpdate = getTicksUntilNextUpdate(ticks, world.getFormat().getDimension());
         chunk.scheduleBlockUpdate(x, y, z, nextUpdate);
-        return true;
     }
 
     private boolean shouldUpdateThisTick(long ticks, Dimension dimension) {
