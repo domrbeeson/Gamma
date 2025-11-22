@@ -12,6 +12,6 @@ public class BedRecipe extends ShapedCraftingRecipe {
     };
 
     public BedRecipe() {
-        super(Material.BED.getItem(), RECIPE);
+        super(Material.BED, RECIPE);
     }
 }

@@ -2,6 +2,7 @@ package domrbeeson.gamma.command.commands;
 
 import domrbeeson.gamma.command.Command;
 import domrbeeson.gamma.command.CommandSender;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.player.Player;
 import domrbeeson.gamma.player.PlayerManager;
@@ -68,7 +69,7 @@ public record ItemCommand(PlayerManager playerManager) implements Command {
             }
         }
 
-        sender.sendMessage("Giving '" + username + "' " + amount + "x " + material.name());
-        giveToPlayer.getInventory().addItem(material, amount);
+        int remainder = giveToPlayer.getInventory().addItem(new Item(material, amount));
+        sender.sendMessage("Giving '" + username + "' " + amount + "x " + material.name() + " (remainder: " + remainder + ")");
     }
 }

@@ -2,6 +2,8 @@ package domrbeeson.gamma.item.handlers;
 
 import domrbeeson.gamma.entity.Pos;
 import domrbeeson.gamma.event.events.player.PlayerRightClickBlockEvent;
+import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.ItemHandler;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.world.Chunk;
 
@@ -16,17 +18,18 @@ public class EmptyBucketItemHandler implements ItemHandler {
     }};
 
     @Override
-    public void use(PlayerRightClickBlockEvent event) {
+    public boolean use(PlayerRightClickBlockEvent event) {
         Pos fluidPos = event.getDirection().applyDirection(event.getX(), event.getY(), event.getZ());
         Chunk chunk = event.getPlayer().getWorld().getChunk(fluidPos);
 
         Material fluid = chunk.getMaterial(fluidPos.getBlockX(), fluidPos.getBlockY(), fluidPos.getBlockZ());
         Material bucket = FLUID_TO_BUCKET.get(fluid);
         if (bucket == null) {
-            return;
+            return false;
         }
 
         chunk.setBlock(fluidPos.getBlockX(), fluidPos.getBlockY(), fluidPos.getBlockZ(), Material.AIR);
-        event.getPlayer().getInventory().setHeldItem(bucket.getItem());
+        event.getPlayer().getInventory().setHeldItem(new Item(bucket));
+        return true;
     }
 }

@@ -6,7 +6,6 @@ import domrbeeson.gamma.entity.Pos;
 import domrbeeson.gamma.inventory.InventoryType;
 import domrbeeson.gamma.inventory.PlayerInventory;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.nbt.NBTCompoundCreator;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.*;
@@ -43,10 +42,7 @@ public class NBTPlayer implements Saveable, NBTCompoundCreator {
 		Item[] invItems = new Item[InventoryType.PLAYER.slots];
 		compound.getList("Inventory").getValue().forEach(tag -> {
 			NBTCompound itemCompound = (NBTCompound) tag;
-			Item item = Material.get(
-					itemCompound.getShort("id").getValue(),
-					itemCompound.getShort("Damage").getValue()
-			).getItem(itemCompound.getByte("Count").getValue());
+            Item item = new Item(itemCompound.getShort("id").getValue(), itemCompound.getShort("Damage").getValue(), itemCompound.getByte("Count").getValue());
 			invItems[itemCompound.getByte("Slot").getValue()] = item;
 		});
 		inv = new PlayerInventory(username, recipeManager, invItems);

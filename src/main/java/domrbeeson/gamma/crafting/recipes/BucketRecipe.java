@@ -12,6 +12,6 @@ public class BucketRecipe extends ShapedCraftingRecipe {
     };
 
     public BucketRecipe() {
-        super(Material.BUCKET.getItem(), RECIPE);
+        super(Material.BUCKET, RECIPE);
     }
 }

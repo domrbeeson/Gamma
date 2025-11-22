@@ -13,6 +13,6 @@ public class JukeboxRecipe extends ShapedCraftingRecipe {
     };
 
     public JukeboxRecipe() {
-        super(Material.JUKEBOX.getItem(), RECIPE);
+        super(Material.JUKEBOX, RECIPE);
     }
 }

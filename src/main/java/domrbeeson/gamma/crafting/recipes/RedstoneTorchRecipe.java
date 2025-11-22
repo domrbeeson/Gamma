@@ -12,6 +12,6 @@ public class RedstoneTorchRecipe extends ShapedCraftingRecipe {
     };
 
     public RedstoneTorchRecipe() {
-        super(Material.REDSTONE_TORCH.getItem(), RECIPE);
+        super(Material.REDSTONE_TORCH, RECIPE);
     }
 }

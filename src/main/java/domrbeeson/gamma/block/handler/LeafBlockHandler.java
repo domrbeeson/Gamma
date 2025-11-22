@@ -32,7 +32,7 @@ public class LeafBlockHandler implements BlockHandler {
         if (material == null) {
             return List.of();
         }
-        return List.of(material.getItem());
+        return List.of(new Item(material));
     }
 
     @Override

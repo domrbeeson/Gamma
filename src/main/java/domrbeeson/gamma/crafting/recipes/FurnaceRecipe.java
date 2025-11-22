@@ -13,6 +13,6 @@ public class FurnaceRecipe extends ShapedCraftingRecipe {
     };
 
     public FurnaceRecipe() {
-        super(Material.FURNACE.getItem(), RECIPE);
+        super(Material.FURNACE, RECIPE);
     }
 }

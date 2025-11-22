@@ -13,6 +13,6 @@ public class LadderRecipe extends ShapedCraftingRecipe {
     };
 
     public LadderRecipe() {
-        super(Material.LADDER.getItem(), RECIPE);
+        super(Material.LADDER, RECIPE);
     }
 }

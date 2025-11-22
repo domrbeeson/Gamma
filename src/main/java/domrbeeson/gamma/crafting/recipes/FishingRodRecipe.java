@@ -13,6 +13,6 @@ public class FishingRodRecipe extends ShapedCraftingRecipe {
     };
 
     public FishingRodRecipe() {
-        super(Material.FISHING_ROD.getItem(), RECIPE);
+        super(Material.FISHING_ROD, RECIPE);
     }
 }

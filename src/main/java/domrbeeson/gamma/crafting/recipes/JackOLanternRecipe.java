@@ -6,6 +6,6 @@ import domrbeeson.gamma.item.Material;
 
 public class JackOLanternRecipe extends ShapelessCraftingRecipe {
     public JackOLanternRecipe() {
-        super(Material.JACK_O_LANTERN.getItem(), new RecipeItem(Material.PUMPKIN), new RecipeItem(Material.TORCH));
+        super(Material.JACK_O_LANTERN, new RecipeItem(Material.PUMPKIN), new RecipeItem(Material.TORCH));
     }
 }

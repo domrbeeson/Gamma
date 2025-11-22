@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class SandstoneSlabRecipe extends ShapedCraftingRecipe {
@@ -13,6 +14,6 @@ public class SandstoneSlabRecipe extends ShapedCraftingRecipe {
     };
 
     public SandstoneSlabRecipe() {
-        super(Material.SANDSTONE_SLAB.getItem(3), RECIPE);
+        super(new Item(Material.SANDSTONE_SLAB, 3), RECIPE);
     }
 }

@@ -14,7 +14,7 @@ import java.util.SplittableRandom;
 
 public class FarmlandBlockHandler implements BlockHandler {
 
-    private static final List<Item> DROPS = List.of(Material.DIRT.getItem());
+    private static final List<Item> DROPS = List.of(new Item(Material.DIRT));
 
     private final SplittableRandom random = new SplittableRandom();
 
@@ -26,7 +26,7 @@ public class FarmlandBlockHandler implements BlockHandler {
     @Override
     public boolean onRightClick(MinecraftServer server, Block block, Player player) {
         Item heldItem = player.getInventory().getHeldItem();
-        if (heldItem.isHoe()) {
+        if (heldItem.getMaterial().isHoe()) {
             player.damageTool();
 
             block.chunk().setBlock(block.x(), block.y(), block.z(), Material.FARMLAND);

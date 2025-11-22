@@ -10,8 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class GravelBlockHandler extends FallingBlockHandler {
 
-    private static final List<Item> GRAVEL = List.of(Material.GRAVEL.getItem());
-    private static final List<Item> FLINT = List.of(Material.FLINT.getItem());
+    private static final List<Item> GRAVEL = List.of(new Item(Material.GRAVEL));
+    private static final List<Item> FLINT = List.of(new Item(Material.FLINT));
 
     public GravelBlockHandler() {
         super(Material.GRAVEL);

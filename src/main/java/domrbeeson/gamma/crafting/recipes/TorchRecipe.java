@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class TorchRecipe extends ShapedCraftingRecipe {
@@ -14,6 +15,6 @@ public class TorchRecipe extends ShapedCraftingRecipe {
     };
 
     public TorchRecipe() {
-        super(Material.TORCH.getItem(4), RECIPE);
+        super(new Item(Material.TORCH, 4), RECIPE);
     }
 }

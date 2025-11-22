@@ -41,7 +41,7 @@ public class PlayerInventory extends CraftingInventory {
     private int activeSlotNextTick = 0;
 
     public PlayerInventory(String username, RecipeManager recipeManager) {
-        this(username, recipeManager, new Item[0]);
+        this(username, recipeManager, new Item[MAPPINGS.length]);
     }
 
     public PlayerInventory(String username, RecipeManager recipeManager, Item[] items) {
@@ -94,7 +94,7 @@ public class PlayerInventory extends CraftingInventory {
 
     public Item getHotbarSlot(int slot) {
         if (slot < 0 || slot >= HOTBAR_SLOTS) {
-            return Item.AIR;
+            return Item.getAir();
         }
         return getSlot(slot);
     }

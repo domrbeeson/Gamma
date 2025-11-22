@@ -13,6 +13,6 @@ public class CompassRecipe extends ShapedCraftingRecipe {
     };
 
     public CompassRecipe() {
-        super(Material.COMPASS.getItem(), RECIPE);
+        super(Material.COMPASS, RECIPE);
     }
 }

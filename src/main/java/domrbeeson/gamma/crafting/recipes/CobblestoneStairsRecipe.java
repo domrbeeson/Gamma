@@ -13,6 +13,6 @@ public class CobblestoneStairsRecipe extends ShapedCraftingRecipe {
     };
 
     public CobblestoneStairsRecipe() {
-        super(Material.COBBLESTONE_STAIRS.getItem(), RECIPE);
+        super(Material.COBBLESTONE_STAIRS, RECIPE);
     }
 }

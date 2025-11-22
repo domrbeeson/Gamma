@@ -20,8 +20,8 @@ public class ReadOnlyWorldFormat implements WorldFormat {
     }
 
     @Override
-    public boolean readChunk(Chunk.Builder builder) {
-        return worldFormat.readChunk(builder);
+    public boolean readChunk(Chunk.Builder builder, Chunk chunkReference) {
+        return worldFormat.readChunk(builder, chunkReference);
     }
 
     @Override

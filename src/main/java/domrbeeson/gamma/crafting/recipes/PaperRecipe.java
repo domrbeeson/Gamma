@@ -13,6 +13,6 @@ public class PaperRecipe extends ShapedCraftingRecipe {
     };
 
     public PaperRecipe() {
-        super(Material.PAPER.getItem(), RECIPE);
+        super(Material.PAPER, RECIPE);
     }
 }

@@ -6,6 +6,6 @@ import domrbeeson.gamma.item.Material;
 
 public class ChestMinecartRecipe extends ShapelessCraftingRecipe {
     public ChestMinecartRecipe() {
-        super(Material.CHEST_MINECART.getItem(), new RecipeItem(Material.CHEST), MINECART);
+        super(Material.CHEST_MINECART, new RecipeItem(Material.CHEST), MINECART);
     }
 }

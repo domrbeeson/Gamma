@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class DetectorRailRecipe extends ShapedCraftingRecipe {
@@ -13,6 +14,6 @@ public class DetectorRailRecipe extends ShapedCraftingRecipe {
     };
 
     public DetectorRailRecipe() {
-        super(Material.DETECTOR_RAIL.getItem(6), RECIPE);
+        super(new Item(Material.DETECTOR_RAIL, 6), RECIPE);
     }
 }

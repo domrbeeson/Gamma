@@ -6,7 +6,7 @@ import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTInt;
 import domrbeeson.gamma.nbt.world.NBTTileEntity;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class NBTJukeboxTile extends NBTTileEntity {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, ChunkGetter chunk) {
+    public TileEntity createTileEntity(World world, Chunk chunk) {
         return new JukeboxTileEntity(chunk, getX(), getY(), getZ(), discItemId);
     }
 

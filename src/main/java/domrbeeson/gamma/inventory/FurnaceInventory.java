@@ -1,21 +1,22 @@
 package domrbeeson.gamma.inventory;
 
-import domrbeeson.gamma.fuel.Fuel;
 import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
-import domrbeeson.gamma.item.SmeltableItem;
 import domrbeeson.gamma.network.packet.out.WindowProgressBarPacketOut;
-import org.jetbrains.annotations.Nullable;
+import domrbeeson.gamma.player.Player;
 
-public class FurnaceInventory extends ProgressBarInventory {
+public class FurnaceInventory extends Inventory {
 
     private static final short SMELT_TICKS = 200;
     private static final short INPUT_SLOT = 0;
     private static final short FUEL_SLOT = 1;
     private static final short OUTPUT_SLOT = 2;
 
-    private short progress = 0;
-    private short fuelBurnTicks = 0;
+    private short cookProgress = 0;
+    private short previousCookProgress = 0;
+    private short totalFuelTicks = 0;
+    private short fuelTicksRemaining = 0;
+    private short previousFuelTicksRemaining = 0;
 
     public FurnaceInventory() {
         super(InventoryType.FURNACE, "");
@@ -30,7 +31,7 @@ public class FurnaceInventory extends ProgressBarInventory {
     }
 
     public void clearInput() {
-        setInput(Item.AIR);
+        setInput(Item.getAir());
     }
 
     public void setFuel(Item item) {
@@ -42,7 +43,7 @@ public class FurnaceInventory extends ProgressBarInventory {
     }
 
     public void clearFuel() {
-        setFuel(Item.AIR);
+        setFuel(Item.getAir());
     }
 
     public void setOutput(Item output) {
@@ -54,80 +55,95 @@ public class FurnaceInventory extends ProgressBarInventory {
     }
 
     public void clearOutput() {
-        setOutput(Item.AIR);
+        setOutput(Item.getAir());
     }
 
-    public short getProgress(short max) {
-        return (short) Math.floor((double) max / SMELT_TICKS * progress);
+    public boolean isBurning() {
+        return fuelTicksRemaining > 0;
+    }
+
+    public short getCookProgress() {
+        return cookProgress;
+    }
+
+    public short getFuelBurnProgress() {
+        return fuelTicksRemaining;
     }
 
     @Override
-    public boolean setSlot(int slot, @Nullable Item item, boolean update) {
-        boolean updated = super.setSlot(slot, item, update);
+    public boolean canDepositIntoSlot(int slot, Item item) {
         if (slot == FUEL_SLOT) {
-            fuelBurnTicks = 0;
+            return item.getItemHandler().isFuel();
         }
-        return updated;
+        return slot != OUTPUT_SLOT;
+    }
+
+    @Override
+    public void onOpen(Player player) {
+        player.sendPacket(new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_ARROW, getCookProgress()));
+        player.sendPacket(new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_FIRE, getFuelBurnProgress()));
+        player.sendPacket(new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_TOTAL_FUEL, totalFuelTicks));
     }
 
     @Override
     public void tick(long ticks) {
         super.tick(ticks);
 
-        // TODO when smelting starts, remove 1 fuel and count down the burn ticks until 0
         // TODO don't know why the fire/arrow doesn't progress on the client
 
-//        if (fuelBurnTicks >= fuel.getBurnTicks()) {
-//            decreaseFuel(fuel, input);
-//        }
+        if (fuelTicksRemaining > 0) {
+            if (getInput().getItemHandler().isSmeltable() && getOutput().getAmount() < getOutput().getMaterial().maxStack) {
+                cookProgress++;
+                if (cookProgress >= SMELT_TICKS) {
+                    getInput().setAmount(getInput().getAmount() - 1);
+//                    setInput(input.getMaterial().getItem(input.getAmount() - 1));
+                    setOutput(new Item(getInput().getItemHandler().getSmeltingOutput(), getOutput().getAmount() + 1));
+                    cookProgress = 0;
+                }
+            } else {
+                cookProgress = 0;
+            }
 
-        if (!(getInput() instanceof SmeltableItem)) {
-            return;
-        }
-        SmeltableItem input = (SmeltableItem) getInput();
-
-        Item output = getOutput();
-        if (output.getId() != 0 && output.getAmount() >= Material.get(output.getId(), output.getMetadata()).maxStack) {
-            return;
-        }
-
-        Fuel fuel = Fuel.get(getFuel().getId());
-        if (fuel == null) {
-            progress = 0;
-            return;
+            fuelTicksRemaining--;
         }
 
-        // TODO furnace burn event?
-        progress++;
-        if (progress >= SMELT_TICKS) {
-            progress = 0;
-            setOutput(input.getSmeltingOutput().getItem());
+        if (fuelTicksRemaining == 0) {
+            if (getFuel().getItemHandler().isFuel()
+                    && getInput().getItemHandler().isSmeltable()
+                    && (getOutput().getMaterial() == Material.AIR || getOutput().getAmount() < getOutput().getMaterial().maxStack)) {
 
-            // TODO set furnace block to unlit furnace
-            // TODO furnace complete event?
-        } else {
-            // TODO set furnace block to lit furnace
-            // TODO furnace start event?
+                getFuel().setAmount(getFuel().getAmount() - 1);
+//                setFuel(getFuel().getMaterial().getItem(getFuel().getAmount() - 1));
+                fuelTicksRemaining = getFuel().getItemHandler().getFuelTicks();
+                totalFuelTicks = fuelTicksRemaining;
+
+                if (hasViewers()) {
+                    WindowProgressBarPacketOut totalFuelPacket = new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_TOTAL_FUEL, totalFuelTicks);
+                    getViewers().forEach(viewer -> {
+                        viewer.sendPacket(totalFuelPacket);
+                    });
+                }
+            }
         }
 
-        if (!getViewers().isEmpty()) {
-            WindowProgressBarPacketOut arrowPacket = new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_ARROW);
-            WindowProgressBarPacketOut firePacket = new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_FIRE);
-            getViewers().forEach(viewer -> {
-                viewer.sendPacket(arrowPacket);
-                viewer.sendPacket(firePacket);
-            });
+        if (cookProgress != previousCookProgress) {
+            previousCookProgress = cookProgress;
+            if (hasViewers()) {
+                WindowProgressBarPacketOut arrowPacket = new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_ARROW, getCookProgress());
+                getViewers().forEach(viewer -> {
+                    viewer.sendPacket(arrowPacket);
+                });
+            }
+        }
+
+        if (fuelTicksRemaining != previousFuelTicksRemaining) {
+            previousFuelTicksRemaining = fuelTicksRemaining;
+            if (hasViewers()) {
+                WindowProgressBarPacketOut firePacket = new WindowProgressBarPacketOut(this, WindowProgressBarPacketOut.Action.FURNACE_FIRE, getFuelBurnProgress());
+                getViewers().forEach(viewer -> {
+                    viewer.sendPacket(firePacket);
+                });
+            }
         }
     }
-
-    private int decreaseFuel(Fuel fuel, SmeltableItem input) {
-        byte newFuelAmount = (byte) (input.getAmount() - 1);
-        if (newFuelAmount <= 0) {
-            setInput(fuel.getItemAfterSmelting());
-        } else {
-            setInput(Material.get(input.getId(), input.getMetadata()).getItem(newFuelAmount));
-        }
-        return newFuelAmount;
-    }
-
 }

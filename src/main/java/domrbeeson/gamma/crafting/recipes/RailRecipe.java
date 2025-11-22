@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class RailRecipe extends ShapedCraftingRecipe {
@@ -13,6 +14,6 @@ public class RailRecipe extends ShapedCraftingRecipe {
     };
 
     public RailRecipe() {
-        super(Material.RAIL.getItem(16), RECIPE);
+        super(new Item(Material.RAIL, 16), RECIPE);
     }
 }

@@ -8,7 +8,7 @@ import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTFloat;
 import domrbeeson.gamma.nbt.tags.NBTInt;
 import domrbeeson.gamma.nbt.world.NBTTileEntity;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.Map;
@@ -48,7 +48,7 @@ public class NBTPistonTile extends NBTTileEntity {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, ChunkGetter chunk) {
+    public TileEntity createTileEntity(World world, Chunk chunk) {
         return new PistonTileEntity(chunk, getX(), getY(), getZ()); // TODO pass piston values
     }
 

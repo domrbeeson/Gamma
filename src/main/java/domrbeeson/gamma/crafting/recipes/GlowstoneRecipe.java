@@ -14,6 +14,6 @@ public class GlowstoneRecipe extends ShapedCraftingRecipe {
     };
 
     public GlowstoneRecipe() {
-        super(Material.GLOWSTONE.getItem(), RECIPE);
+        super(Material.GLOWSTONE, RECIPE);
     }
 }

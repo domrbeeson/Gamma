@@ -13,6 +13,6 @@ public class OakDoorRecipe extends ShapedCraftingRecipe {
     };
 
     public OakDoorRecipe() {
-        super(Material.OAK_DOOR.getItem(), RECIPE);
+        super(Material.OAK_DOOR, RECIPE);
     }
 }

@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class OakSlabRecipe extends ShapedCraftingRecipe {
@@ -11,6 +12,6 @@ public class OakSlabRecipe extends ShapedCraftingRecipe {
     };
 
     public OakSlabRecipe() {
-        super(Material.OAK_SLAB.getItem(3), RECIPE);
+        super(new Item(Material.OAK_SLAB, 3), RECIPE);
     }
 }

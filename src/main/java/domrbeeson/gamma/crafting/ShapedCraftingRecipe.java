@@ -1,6 +1,7 @@
 package domrbeeson.gamma.crafting;
 
 import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.Material;
 import org.jetbrains.annotations.Nullable;
 
 public class ShapedCraftingRecipe implements CraftingRecipe {
@@ -8,6 +9,10 @@ public class ShapedCraftingRecipe implements CraftingRecipe {
     private final Item output;
     private final RecipeItem[][] recipe;
     private final int filledSlots;
+
+    public ShapedCraftingRecipe(Material output, RecipeItem[][] recipe) {
+        this(new Item(output), recipe);
+    }
 
     public ShapedCraftingRecipe(Item output, RecipeItem[][] recipe) {
         this.output = output;

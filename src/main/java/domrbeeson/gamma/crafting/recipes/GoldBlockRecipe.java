@@ -13,6 +13,6 @@ public class GoldBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public GoldBlockRecipe() {
-        super(Material.GOLD_BLOCK.getItem(), RECIPE);
+        super(Material.GOLD_BLOCK, RECIPE);
     }
 }

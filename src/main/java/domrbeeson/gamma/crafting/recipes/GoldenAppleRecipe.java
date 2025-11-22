@@ -15,6 +15,6 @@ public class GoldenAppleRecipe extends ShapedCraftingRecipe {
     };
 
     public GoldenAppleRecipe() {
-        super(Material.GOLDEN_APPLE.getItem(), RECIPE);
+        super(Material.GOLDEN_APPLE, RECIPE);
     }
 }

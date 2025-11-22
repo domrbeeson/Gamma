@@ -6,7 +6,7 @@ import domrbeeson.gamma.inventory.FurnaceInventory;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTShort;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class NBTFurnaceTile extends NBTInventoryTile {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, ChunkGetter chunk) {
+    public FurnaceTileEntity createTileEntity(World world, Chunk chunk) {
         return new FurnaceTileEntity(chunk, getX(), getY(), getZ());
     }
 
@@ -38,9 +38,9 @@ public class NBTFurnaceTile extends NBTInventoryTile {
     public Map<String, NBTTag> createCompoundTags() {
         Map<String, NBTTag> tags = super.createCompoundTags();
 
-        // TODO get actual values from furnace inventory
-        tags.put("BurnTime", new NBTShort((short) 0));
-        tags.put("CookTime", new NBTShort((short) 0));
+        tags.put("BurnTime", new NBTShort(inventory.getFuelBurnProgress()));
+        tags.put("CookTime", new NBTShort(inventory.getCookProgress()));
+        // TODO store fuel max burn time?
 
         return tags;
     }

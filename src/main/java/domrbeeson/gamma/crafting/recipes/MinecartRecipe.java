@@ -12,6 +12,6 @@ public class MinecartRecipe extends ShapedCraftingRecipe {
     };
 
     public MinecartRecipe() {
-        super(Material.MINECART.getItem(), RECIPE);
+        super(Material.MINECART, RECIPE);
     }
 }

@@ -10,7 +10,7 @@ import domrbeeson.gamma.world.World;
 public interface WorldFormat extends Saveable {
 
     void load(World world);
-    boolean readChunk(Chunk.Builder chunk);
+    boolean readChunk(Chunk.Builder chunk, Chunk chunkReference);
     void writeChunk(Chunk chunk);
     Player readPlayer(Player.Builder builder);
     void writePlayer(Player player);

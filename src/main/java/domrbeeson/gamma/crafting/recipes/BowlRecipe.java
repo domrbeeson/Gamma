@@ -2,6 +2,7 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 
 public class BowlRecipe extends ShapedCraftingRecipe {
@@ -12,6 +13,6 @@ public class BowlRecipe extends ShapedCraftingRecipe {
     };
 
     public BowlRecipe() {
-        super(Material.BOWL.getItem(4), RECIPE);
+        super(new Item(Material.BOWL, 4), RECIPE);
     }
 }

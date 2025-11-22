@@ -3,17 +3,16 @@ package domrbeeson.gamma.block.tile;
 import domrbeeson.gamma.Tickable;
 import domrbeeson.gamma.block.Block;
 import domrbeeson.gamma.world.Chunk;
-import domrbeeson.gamma.world.ChunkGetter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public abstract class TileEntity implements Tickable {
 
-    private final ChunkGetter chunk;
+    private final Chunk chunk;
     private final int x, y, z;
 
-    public TileEntity(ChunkGetter chunk, int x, int y, int z) {
+    public TileEntity(Chunk chunk, int x, int y, int z) {
         this.chunk = chunk;
         this.x = x;
         this.y = y;
@@ -21,7 +20,7 @@ public abstract class TileEntity implements Tickable {
     }
 
     public Chunk getChunk() {
-        return chunk.get(Block.getChunkRelativeCoord(x), Block.getChunkRelativeCoord(z));
+        return chunk;
     }
 
     public int getX() {

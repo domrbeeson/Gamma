@@ -43,7 +43,7 @@ public class CraftingInventory extends Inventory {
 
     public void setOutput(Item item) {
         if (item == null) {
-            item = Item.AIR;
+            item = Item.getAir();
         }
         setSlot(outputSlot, item);
     }
@@ -95,8 +95,8 @@ public class CraftingInventory extends Inventory {
                     return;
                 }
                 int remainder = cursor.getAmount() + output.getAmount() - newAmount;
-                player.setCursorItem(cursorMaterial.getItem(newAmount));
-                setOutput(cursorMaterial.getItem(remainder));
+                player.setCursorItem(new Item(cursorMaterial, newAmount));
+                setOutput(new Item(cursorMaterial, remainder));
             } else {
                 player.setCursorItem(output);
             }
@@ -106,7 +106,8 @@ public class CraftingInventory extends Inventory {
                     if (populatedSlots[x][y] == null) {
                         continue;
                     }
-                    setSlot(craftingGrid[x][y], Material.get(populatedSlots[x][y].getId(), populatedSlots[x][y].getMetadata()).getItem(populatedSlots[x][y].getAmount() - 1));
+                    populatedSlots[x][y].setAmount(populatedSlots[x][y].getAmount() - 1);
+//                    setSlot(craftingGrid[x][y], Material.get(populatedSlots[x][y].getId(), populatedSlots[x][y].getMetadata()).getItem(populatedSlots[x][y].getAmount() - 1));
                 }
             }
         }
@@ -124,7 +125,7 @@ public class CraftingInventory extends Inventory {
                     }
                     // TODO drop crafting inventory item on the ground
                     System.out.println("TODO drop " + item.getAmount() + "x " + item.getId() + ":" + item.getMetadata() + " from crafting inventory");
-                    setSlot(craftingGrid[x][y], Item.AIR);
+                    setSlot(craftingGrid[x][y], Item.getAir());
                 }
             }
         }

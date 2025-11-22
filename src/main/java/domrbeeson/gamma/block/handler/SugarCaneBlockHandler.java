@@ -13,7 +13,7 @@ import java.util.List;
 public class SugarCaneBlockHandler extends PlantStackBlockHandler {
 
     private static final int GROW_HEIGHT = 3;
-    private static final List<Item> DROPS = List.of(Material.SUGAR_CANE_ITEM.getItem());
+    private static final List<Item> DROPS = List.of(new Item(Material.SUGAR_CANE_ITEM));
     private static final byte[] GROW_ON_BLOCKS = new byte[] {
             Material.SUGAR_CANE_BLOCK.blockId,
             Material.GRASS.blockId,

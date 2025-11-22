@@ -7,7 +7,7 @@ import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTInt;
 import domrbeeson.gamma.nbt.tags.NBTString;
 import domrbeeson.gamma.nbt.world.tile.*;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.HashMap;
@@ -85,7 +85,7 @@ public abstract class NBTTileEntity implements NBTCompoundCreator {
         return NAME_TO_NBT.get(name).apply(compound);
     }
 
-    public abstract TileEntity createTileEntity(World world, ChunkGetter chunk);
+    public abstract TileEntity createTileEntity(World world, Chunk chunk);
 
     public final int getX() {
         return x;

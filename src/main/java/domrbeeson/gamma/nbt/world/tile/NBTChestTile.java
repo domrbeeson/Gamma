@@ -5,14 +5,13 @@ import domrbeeson.gamma.block.tile.TileEntity;
 import domrbeeson.gamma.inventory.ChestInventory;
 import domrbeeson.gamma.inventory.InventoryType;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTByte;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTList;
 import domrbeeson.gamma.nbt.tags.NBTShort;
 import domrbeeson.gamma.nbt.world.NBTTileEntity;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class NBTChestTile extends NBTTileEntity {
             byte amount = itemNbt.getByte("Count").getValue();
             short metadata = itemNbt.getShort("Damage").getValue();
             short id = itemNbt.getShort("id").getValue();
-            inventory.setSlot(slot, Material.get(id, metadata).getItem(amount));
+            inventory.setSlot(slot, new Item(id, metadata, amount));
         });
     }
 
@@ -47,7 +46,7 @@ public class NBTChestTile extends NBTTileEntity {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, ChunkGetter chunk) {
+    public TileEntity createTileEntity(World world, Chunk chunk) {
         return new ChestTileEntity(chunk, getX(), getY(), getZ(), inventory);
     }
 

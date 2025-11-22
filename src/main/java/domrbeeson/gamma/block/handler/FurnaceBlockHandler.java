@@ -22,14 +22,22 @@ public class FurnaceBlockHandler extends TileEntityBlockHandler<FurnaceTileEntit
 
     @Override
     public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new FurnaceTileEntity((_, _) -> chunk, x, y, z));
+        chunk.addTileEntity(new FurnaceTileEntity(chunk, x, y, z));
     }
 
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         List<Item> drops = new ArrayList<>();
-        drops.add(Material.FURNACE.getItem());
-        // TODO drop furnace items
+        drops.add(new Item(Material.FURNACE));
+
+        TileEntity tile = chunk.getTileEntity(x, y, z);
+        if (tile != null) {
+            FurnaceTileEntity furnace = (FurnaceTileEntity) tile;
+            drops.add(furnace.getInventory().getFuel());
+            drops.add(furnace.getInventory().getOutput());
+            drops.add(furnace.getInventory().getInput());
+        }
+
         return drops;
     }
 

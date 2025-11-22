@@ -13,6 +13,6 @@ public class ArrowRecipe extends ShapedCraftingRecipe {
     };
 
     public ArrowRecipe() {
-        super(Material.ARROW.getItem(), RECIPE);
+        super(Material.ARROW, RECIPE);
     }
 }

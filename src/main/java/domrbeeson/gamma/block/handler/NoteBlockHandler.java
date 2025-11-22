@@ -11,11 +11,9 @@ import java.util.List;
 
 public class NoteBlockHandler extends PoweredBlockHandler {
 
-    private static final List<Item> DROPS = List.of(Material.NOTE_BLOCK.getItem());
-
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
-        return DROPS;
+        return List.of(new Item(Material.NOTE_BLOCK));
     }
 
     @Override

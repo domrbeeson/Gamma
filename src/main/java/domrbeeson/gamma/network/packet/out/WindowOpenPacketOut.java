@@ -21,7 +21,7 @@ public class WindowOpenPacketOut extends PacketOut {
 
     @Override
     public void send(int protocol, DataOutputStream stream) throws IOException {
-        stream.writeByte(1);
+        stream.writeByte(invType);
         stream.writeByte(invType);
         stream.writeUTF(name);
         stream.writeByte(slots);

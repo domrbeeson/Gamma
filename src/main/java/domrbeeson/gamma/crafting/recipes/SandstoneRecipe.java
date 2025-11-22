@@ -12,7 +12,7 @@ public class SandstoneRecipe extends ShapedCraftingRecipe {
     };
 
     public SandstoneRecipe() {
-        super(Material.SANDSTONE.getItem(), RECIPE);
+        super(Material.SANDSTONE, RECIPE);
     }
 
 }

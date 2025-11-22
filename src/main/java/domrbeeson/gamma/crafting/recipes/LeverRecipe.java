@@ -12,6 +12,6 @@ public class LeverRecipe extends ShapedCraftingRecipe {
     };
 
     public LeverRecipe() {
-        super(Material.LEVER.getItem(), RECIPE);
+        super(Material.LEVER, RECIPE);
     }
 }

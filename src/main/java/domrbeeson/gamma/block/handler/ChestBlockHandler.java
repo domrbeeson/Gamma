@@ -22,13 +22,13 @@ public class ChestBlockHandler extends TileEntityBlockHandler<ChestTileEntity> {
 
     @Override
     public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new ChestTileEntity((_, _) -> chunk, x, y, z));
+        chunk.addTileEntity(new ChestTileEntity(chunk, x, y, z));
     }
 
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         List<Item> drops = new ArrayList<>();
-        drops.add(Material.CHEST.getItem());
+        drops.add(new Item(Material.CHEST));
         ChestTileEntity tile = getTileEntity(chunk, x, y, z);
         if (tile != null) {
             for (Item item : tile.getInventory().getSlots()) {

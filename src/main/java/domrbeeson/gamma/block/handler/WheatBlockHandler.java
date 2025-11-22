@@ -22,10 +22,10 @@ public class WheatBlockHandler extends InstantBreakBlockHandler {
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         List<Item> drops = new ArrayList<>();
         if (metadata == FULLY_GROWN_METADATA) {
-            drops.add(Material.WHEAT.getItem());
-            drops.add(Material.WHEAT_SEEDS.getItem(random.nextInt(1, 5)));
+            drops.add(new Item(Material.WHEAT));
+            drops.add(new Item(Material.WHEAT_SEEDS, random.nextInt(1, 5)));
         } else {
-            drops.add(Material.WHEAT_SEEDS.getItem());
+            drops.add(new Item(Material.WHEAT_SEEDS));
         }
         return drops;
     }
@@ -83,7 +83,8 @@ public class WheatBlockHandler extends InstantBreakBlockHandler {
         }
 
         block.chunk().setBlock(block.x(), block.y(), block.z(), block.id(), FULLY_GROWN_METADATA);
-        player.getInventory().setHeldItem(Material.BONE_MEAL.getItem(heldItem.getAmount() - 1));
+        player.getInventory().getHeldItem().setAmount(player.getInventory().getHeldItem().getAmount() - 1);
+//        player.getInventory().setHeldItem(.getItem(heldItem.getAmount() - 1));
         return true;
     }
 

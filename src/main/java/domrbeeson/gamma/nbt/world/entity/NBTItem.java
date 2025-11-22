@@ -2,6 +2,7 @@ package domrbeeson.gamma.nbt.world.entity;
 
 import domrbeeson.gamma.entity.Entity;
 import domrbeeson.gamma.entity.ItemEntity;
+import domrbeeson.gamma.item.Item;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTByte;
@@ -64,6 +65,6 @@ public class NBTItem extends NBTHealthEntity {
 
     @Override
     public Entity<?> createEntity(World world) {
-        return new ItemEntity(world, getPos(), Material.get(itemId, damage).getItem(amount));
+        return new ItemEntity(world, getPos(), new Item(itemId, damage, amount));
     }
 }

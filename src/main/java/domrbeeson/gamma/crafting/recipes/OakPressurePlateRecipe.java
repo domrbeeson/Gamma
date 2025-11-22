@@ -11,6 +11,6 @@ public class OakPressurePlateRecipe extends ShapedCraftingRecipe {
     };
 
     public OakPressurePlateRecipe() {
-        super(Material.OAK_PRESSURE_PLATE.getItem(), RECIPE);
+        super(Material.OAK_PRESSURE_PLATE, RECIPE);
     }
 }

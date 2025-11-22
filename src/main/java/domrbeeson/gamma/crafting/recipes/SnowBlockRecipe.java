@@ -14,6 +14,6 @@ public class SnowBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public SnowBlockRecipe() {
-        super(Material.SNOW_BLOCK.getItem(), RECIPE);
+        super(Material.SNOW_BLOCK, RECIPE);
     }
 }

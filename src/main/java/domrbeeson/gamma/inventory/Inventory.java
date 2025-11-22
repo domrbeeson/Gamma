@@ -32,7 +32,7 @@ public abstract class Inventory implements Tickable, Viewable {
     private final Map<Integer, PlayerWindowClickEvent> playerClicks = new HashMap<>();
 
     private short slotsPopulated = 0;
-    private boolean changedThisTick = false;
+    private boolean save = false;
 
     public Inventory(InventoryType type, String title) {
         this(type, title, new Item[type.slots]);
@@ -66,7 +66,7 @@ public abstract class Inventory implements Tickable, Viewable {
     }
 
     public final boolean setSlot(int slot, Material material) {
-        return setSlot(slot, material.getItem());
+        return setSlot(slot, new Item(material));
     }
 
     public final boolean setSlot(int slot, @Nullable Item item) {
@@ -79,7 +79,7 @@ public abstract class Inventory implements Tickable, Viewable {
         }
         Item slotItem = getSlot(slot);
         if (item == null || item.getId() == 0 || item.getAmount() == 0) {
-            item = Item.AIR;
+            item = Item.getAir();
         } else if (slotItem.equals(item)) {
             return false;
         }
@@ -92,16 +92,16 @@ public abstract class Inventory implements Tickable, Viewable {
         if (update) {
             updates.add((short) slot);
         }
-        changedThisTick = true;
+        save = true;
         return true;
     }
 
     public Item getSlot(int slot) {
         if (!isSlotValid(slot)) {
-            return Item.AIR;
+            return Item.getAir();
         }
         if (items[slot] == null) {
-            return Item.AIR;
+            return Item.getAir();
         }
         return items[slot];
     }
@@ -115,46 +115,51 @@ public abstract class Inventory implements Tickable, Viewable {
     }
 
     public int addItem(Item item) {
-        return addItem(item.getId(), item.getMetadata(), item.getAmount(), items.length - 1);
+        return addItem(item.getId(), item.getMetadata(), item.getAmount());
     }
 
-    public int addItem(Material material, int amount) {
-        return addItem(material.id, material.metadata, amount, items.length - 1);
-    }
-
-    // Returns amount of items that weren't able to be added
-    protected int addItem(short id, short metadata, int amount, int finishIndex) {
+    /**
+        @return amount of items that were unable to be added
+     */
+    public int addItem(short id, short metadata, int amount) {
         if (amount == 0) {
             return 0;
         }
+        if (id == 0) {
+            return amount;
+        }
+
+        // Find existing stacks to merge with first
         short maxStack = Material.get(id, metadata).maxStack;
-        Item slotItem;
-        short slotId, slotMetadata;
-        byte slotAmount;
-        for (int slot = 0; slot <= finishIndex; slot++) {
-            slotItem = getSlot(slot);
-            slotId = slotItem.getId();
-            slotMetadata = slotItem.getMetadata();
-            slotAmount = slotId == 0 ? 0 : slotItem.getAmount();
-            if (slotId == id && slotMetadata == metadata && slotAmount < maxStack) {
-                byte addAmount = (byte) Math.min(maxStack - slotAmount, amount);
-                setSlot(slot, Material.get(id, metadata).getItem(slotAmount + addAmount));
+        for (short slot = 0; slot <= items.length - 1; slot++) {
+            Item slotItem = items[slot] == null ? Item.getAir() : items[slot];
+            if (slotItem.getId() == id && slotItem.getMetadata() == metadata) {
+                slotItem.setIdAndMetadata(id, metadata);
+                int currentAmount = slotItem.getAmount();
+                int addAmount = Math.min(amount, maxStack - currentAmount);
+                slotItem.addAmount(addAmount);
+                updates.add(slot);
                 amount -= addAmount;
                 if (amount == 0) {
-                    return 0;
+                    break;
                 }
             }
         }
-        for (int slot = 0; slot <= finishIndex; slot++) {
-            slotItem = getSlot(slot);
-            slotId = slotItem.getId();
-            slotAmount = slotId == 0 ? 0 : slotItem.getAmount();
-            if (slotId == id || slotId == 0) {
-                byte addAmount = (byte) Math.min(maxStack - slotAmount, amount);
-                setSlot(slot, Material.get(id, metadata).getItem(slotAmount + addAmount));
-                amount -= addAmount;
-                if (amount == 0) {
-                    return 0;
+
+        // If there's any remaining items to add, replace empty inventory slots
+        if (amount > 0) {
+            for (short slot = 0; slot <= items.length - 1; slot++) {
+                Item slotItem = items[slot] == null ? Item.getAir() : items[slot];
+                if (slotItem.getId() == 0 || (slotItem.getId() == id && slotItem.getMetadata() == metadata)) {
+                    slotItem.setIdAndMetadata(id, metadata);
+                    int currentAmount = slotItem.getAmount();
+                    int addAmount = Math.min(amount, maxStack - currentAmount);
+                    slotItem.addAmount(addAmount);
+                    updates.add(slot);
+                    amount -= addAmount;
+                    if (amount == 0) {
+                        break;
+                    }
                 }
             }
         }
@@ -163,7 +168,7 @@ public abstract class Inventory implements Tickable, Viewable {
 
     public void clear() {
         for (short i = 0; i < items.length; i++) {
-            setSlot(i, Item.AIR);
+            setSlot(i, Item.getAir());
         }
     }
 
@@ -208,6 +213,10 @@ public abstract class Inventory implements Tickable, Viewable {
         Item slotItem = getSlot(slot);
         switch (event.getButton()) {
             case LEFT -> {
+                if (cursorItem.getMaterial() != Material.AIR && !canDepositIntoSlot(slot, cursorItem)) {
+                    return;
+                }
+
                 if (cursorItem.getId() == slotItem.getId() && cursorItem.getMetadata() == slotItem.getMetadata()) {
                     int depositAmount = slotItem.getAmount() + cursorItem.getAmount();
                     int maxStack = Material.get(slotItem.getId(), slotItem.getMetadata()).maxStack;
@@ -215,8 +224,9 @@ public abstract class Inventory implements Tickable, Viewable {
                     if (remainder < 0) {
                         remainder = 0;
                     }
-                    player.setCursorItem(Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(remainder));
-                    setSlot(slot, Material.get(slotItem.getId(), slotItem.getMetadata()).getItem(depositAmount));
+                    cursorItem.setAmount(remainder);
+//                    player.setCursorItem(Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(remainder));
+                    setSlot(slot, new Item(slotItem.getId(), slotItem.getMetadata(), depositAmount));
                 } else {
                     swapSlotAndCursor(slot, player);
                 }
@@ -225,14 +235,19 @@ public abstract class Inventory implements Tickable, Viewable {
                 if (cursorItem.getId() == 0) {
                     if (slotItem.getAmount() > 0) {
                         int pickupAmount = (int) Math.ceil(slotItem.getAmount() / 2d);
-                        player.setCursorItem(Material.get(slotItem.getId(), slotItem.getMetadata()).getItem(pickupAmount));
-                        setSlot(slot, Material.get(slotItem.getId(), slotItem.getMetadata()).getItem(slotItem.getAmount() - pickupAmount));
+                        cursorItem.setAmount(pickupAmount);
+//                        player.setCursorItem(Material.get(slotItem.getId(), slotItem.getMetadata()).getItem(pickupAmount));
+                        slotItem.setAmount(slotItem.getAmount() - pickupAmount);
+//                        setSlot(slot, Material.get(slotItem.getId(), slotItem.getMetadata()).getItem(slotItem.getAmount() - pickupAmount));
                     }
                 } else {
                     if (slotItem.getId() == 0 || (slotItem.getId() == cursorItem.getId() && slotItem.getMetadata() == cursorItem.getMetadata())) {
                         if (slotItem.getAmount() < Material.get(slotItem.getId(), slotItem.getMetadata()).maxStack) {
-                            setSlot(slot, Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(slotItem.getAmount() + 1));
-                            player.setCursorItem(Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(cursorItem.getAmount() - 1));
+                            slotItem.setIdAndMetadata(cursorItem.getId(), cursorItem.getMetadata());
+                            slotItem.setAmount(slotItem.getAmount() + 1);
+//                            setSlot(slot, Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(slotItem.getAmount() + 1));
+                            cursorItem.setAmount(cursorItem.getAmount() - 1);
+//                            player.setCursorItem(Material.get(cursorItem.getId(), cursorItem.getMetadata()).getItem(cursorItem.getAmount() - 1));
                         }
                     } else {
                         swapSlotAndCursor(slot, player);
@@ -255,7 +270,7 @@ public abstract class Inventory implements Tickable, Viewable {
                 });
             });
             updates.clear();
-            changedThisTick = false;
+            save = false;
         }
     }
 
@@ -274,13 +289,14 @@ public abstract class Inventory implements Tickable, Viewable {
     @Override
     public void addViewer(Player player) {
         if (viewers.add(player)) {
-//            player.sendPacket(new WindowOpenPacketOut(this)); // TODO broken?
+            player.sendPacket(new WindowOpenPacketOut(this));
             onOpen(player);
+
+            // TODO replace this with WindowItemsPacketOut
             for (short slot = 0; slot < items.length; slot++) {
                 if (items[slot] == null || items[slot].getId() == 0) {
                     continue;
                 }
-                // TODO replace this with WindowItemsPacketOut
                 WindowSlotPacketOut packet = new WindowSlotPacketOut(type, mapInventorySlotToClientSlot(slot), getSlot(slot));
                 player.sendPacket(packet);
             }
@@ -305,16 +321,12 @@ public abstract class Inventory implements Tickable, Viewable {
         return !viewers.isEmpty();
     }
 
-    public @Nullable Item[] getChanges() {
-        if (changedThisTick) {
-            changedThisTick = false;
-            return items;
-        }
-        return null;
+    protected void markForSaving() {
+        save = true;
     }
 
-    public boolean hasChangedThisTick() {
-        return changedThisTick;
+    public boolean shouldSave() {
+        return save;
     }
 
     protected static short[] reversePlayerInventoryMappings(short[] playerInvMappings) {
@@ -331,6 +343,10 @@ public abstract class Inventory implements Tickable, Viewable {
 
     public void onClose(Player player) {
 
+    }
+
+    public boolean canDepositIntoSlot(int slot, Item item) {
+        return true;
     }
 
 }

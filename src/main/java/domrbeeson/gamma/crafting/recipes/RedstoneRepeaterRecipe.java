@@ -14,6 +14,6 @@ public class RedstoneRepeaterRecipe extends ShapedCraftingRecipe {
     };
 
     public RedstoneRepeaterRecipe() {
-        super(Material.REDSTONE_REPEATER.getItem(), RECIPE);
+        super(Material.REDSTONE_REPEATER, RECIPE);
     }
 }

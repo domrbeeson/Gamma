@@ -22,7 +22,7 @@ public class AlphaWorldFormat extends NotchianWorldFormat {
     }
 
     @Override
-    public boolean readChunk(Chunk.Builder builder) {
+    public boolean readChunk(Chunk.Builder builder, Chunk chunkReference) {
         File chunkFile = getChunkFile(builder.world, builder.x, builder.z);
         if (!chunkFile.exists()) {
             return false;
@@ -65,7 +65,7 @@ public class AlphaWorldFormat extends NotchianWorldFormat {
         });
 
         chunkNbt.getTileEntities().forEach(tag -> {
-            TileEntity tile = NBTTileEntity.createNBTEntity((NBTCompound) tag).createTileEntity(getWorld(), (x, z) -> getWorld().getChunk(x, z));
+            TileEntity tile = NBTTileEntity.createNBTEntity((NBTCompound) tag).createTileEntity(getWorld(), chunkReference);
             builder.tileEntity(tile);
         });
 

@@ -1,16 +1,16 @@
 package domrbeeson.gamma.block.tile;
 
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 
 public class JukeboxTileEntity extends TileEntity {
 
     private short discItemId;
 
-    public JukeboxTileEntity(ChunkGetter chunk, int x, int y, int z) {
+    public JukeboxTileEntity(Chunk chunk, int x, int y, int z) {
         this(chunk, x, y, z, (short) 0);
     }
 
-    public JukeboxTileEntity(ChunkGetter chunk, int x, int y, int z, short discItemId) {
+    public JukeboxTileEntity(Chunk chunk, int x, int y, int z, short discItemId) {
         super(chunk, x, y, z);
         this.discItemId = discItemId;
     }

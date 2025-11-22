@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TntBlockHandler extends PoweredBlockHandler {
 
-    private static final List<Item> FLINT_AND_STEEL_DROPS = List.of(Material.TNT.getItem());
+    private static final List<Item> FLINT_AND_STEEL_DROPS = List.of(new Item(Material.TNT));
 
 //    private final boolean flintAndSteel = MinecraftServer.getServerSettings().getMinecraftVersion().features.tntRequiresFlintAndSteel();
     private final boolean flintAndSteel = false; // TODO

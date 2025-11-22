@@ -15,6 +15,6 @@ public class TntRecipe extends ShapedCraftingRecipe {
     };
 
     public TntRecipe() {
-        super(Material.TNT.getItem(), RECIPE);
+        super(Material.TNT, RECIPE);
     }
 }

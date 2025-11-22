@@ -14,6 +14,6 @@ public class ClayBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public ClayBlockRecipe() {
-        super(Material.CLAY_BLOCK.getItem(), RECIPE);
+        super(Material.CLAY_BLOCK, RECIPE);
     }
 }

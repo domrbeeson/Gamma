@@ -13,6 +13,6 @@ public class PaintingRecipe extends ShapedCraftingRecipe {
     };
 
     public PaintingRecipe() {
-        super(Material.PAINTING.getItem(), RECIPE);
+        super(Material.PAINTING, RECIPE);
     }
 }

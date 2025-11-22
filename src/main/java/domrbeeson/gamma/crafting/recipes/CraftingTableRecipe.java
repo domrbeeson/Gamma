@@ -12,7 +12,7 @@ public class CraftingTableRecipe extends ShapedCraftingRecipe {
     };
 
     public CraftingTableRecipe() {
-        super(Material.CRAFTING_TABLE.getItem(), RECIPE);
+        super(Material.CRAFTING_TABLE, RECIPE);
     }
 
 }

@@ -13,6 +13,6 @@ public class DiamondBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public DiamondBlockRecipe() {
-        super(Material.DIAMOND_BLOCK.getItem(), RECIPE);
+        super(Material.DIAMOND_BLOCK, RECIPE);
     }
 }

@@ -6,6 +6,6 @@ import domrbeeson.gamma.item.Material;
 
 public class SugarRecipe extends ShapelessCraftingRecipe {
     public SugarRecipe() {
-        super(Material.SUGAR.getItem(), new RecipeItem(Material.SUGAR_CANE_ITEM));
+        super(Material.SUGAR, new RecipeItem(Material.SUGAR_CANE_ITEM));
     }
 }

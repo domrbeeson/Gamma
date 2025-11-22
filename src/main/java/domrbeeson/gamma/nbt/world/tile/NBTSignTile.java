@@ -6,7 +6,7 @@ import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
 import domrbeeson.gamma.nbt.tags.NBTString;
 import domrbeeson.gamma.nbt.world.NBTTileEntity;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.World;
 
 import java.util.Arrays;
@@ -45,7 +45,7 @@ public class NBTSignTile extends NBTTileEntity {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, ChunkGetter chunk) {
+    public TileEntity createTileEntity(World world, Chunk chunk) {
         return new SignTileEntity(chunk, getX(), getY(), getZ(), lines);
     }
 

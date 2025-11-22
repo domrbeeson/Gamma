@@ -11,7 +11,7 @@ import java.util.List;
 public class CactusBlockHandler extends PlantStackBlockHandler {
 
     private static final int GROW_HEIGHT = 3;
-    private static final List<Item> DROPS = List.of(Material.CACTUS.getItem());
+    private static final List<Item> DROPS = List.of(new Item(Material.CACTUS));
 
     public CactusBlockHandler() {
         super(Material.CACTUS.blockId);

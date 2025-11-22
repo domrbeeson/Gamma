@@ -13,6 +13,6 @@ public class ClockRecipe extends ShapedCraftingRecipe {
     };
 
     public ClockRecipe() {
-        super(Material.CLOCK.getItem(), RECIPE);
+        super(Material.CLOCK, RECIPE);
     }
 }

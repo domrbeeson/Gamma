@@ -1,11 +1,16 @@
 package domrbeeson.gamma.crafting;
 
 import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.Material;
 
 public class ShapelessCraftingRecipe implements CraftingRecipe {
 
     private final Item output;
     private final RecipeItem[] recipe;
+
+    public ShapelessCraftingRecipe(Material output, RecipeItem... recipe) {
+        this(new Item(output), recipe);
+    }
 
     public ShapelessCraftingRecipe(Item output, RecipeItem... recipe) {
         this.output = output;
@@ -52,7 +57,7 @@ public class ShapelessCraftingRecipe implements CraftingRecipe {
 
     @Override
     public Item getOutput() {
-        return output;
+        return output.clone();
     }
 
 }

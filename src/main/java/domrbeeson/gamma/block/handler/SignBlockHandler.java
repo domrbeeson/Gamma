@@ -16,7 +16,7 @@ import java.util.List;
 
 public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
 
-    private static final List<Item> DROPS = List.of(Material.SIGN.getItem());
+    private static final List<Item> DROPS = List.of(new Item(Material.SIGN));
 
     public SignBlockHandler() {
         super(SignTileEntity.class);
@@ -24,7 +24,7 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
 
     @Override
     public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new SignTileEntity((_, _) -> chunk, x, y, z));
+        chunk.addTileEntity(new SignTileEntity(chunk, x, y, z));
 
         if (player == null) {
             return;

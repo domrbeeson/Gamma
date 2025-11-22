@@ -13,6 +13,6 @@ public class IronBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public IronBlockRecipe() {
-        super(Material.IRON_BLOCK.getItem(), RECIPE);
+        super(Material.IRON_BLOCK, RECIPE);
     }
 }

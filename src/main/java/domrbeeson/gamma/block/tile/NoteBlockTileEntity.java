@@ -1,16 +1,16 @@
 package domrbeeson.gamma.block.tile;
 
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 
 public class NoteBlockTileEntity extends TileEntity {
 
     private byte note;
 
-    public NoteBlockTileEntity(ChunkGetter chunk, int x, int y, int z) {
+    public NoteBlockTileEntity(Chunk chunk, int x, int y, int z) {
         this(chunk, x, y, z, (byte) 0);
     }
 
-    public NoteBlockTileEntity(ChunkGetter chunk, int x, int y, int z, byte note) {
+    public NoteBlockTileEntity(Chunk chunk, int x, int y, int z, byte note) {
         super(chunk, x, y, z);
         this.note = note;
     }

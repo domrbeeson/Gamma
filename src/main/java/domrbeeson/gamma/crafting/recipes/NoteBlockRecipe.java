@@ -13,6 +13,6 @@ public class NoteBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public NoteBlockRecipe() {
-        super(Material.NOTE_BLOCK.getItem(), RECIPE);
+        super(Material.NOTE_BLOCK, RECIPE);
     }
 }

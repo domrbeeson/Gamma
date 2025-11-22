@@ -5,7 +5,7 @@ import domrbeeson.gamma.world.World;
 
 public abstract class HealthEntity<T extends EntityMetadata> extends Entity<T> {
 
-    private final double maxHealth;
+    private final short maxHealth;
 
     private short health;
 
@@ -25,6 +25,15 @@ public abstract class HealthEntity<T extends EntityMetadata> extends Entity<T> {
 
     public void setHealth(short health) {
         this.health = health;
+    }
+
+    public void addHealth(short health) {
+        this.health += health;
+        if (this.health < 0) {
+            this.health = 0;
+        } else if (this.health > maxHealth) {
+            this.health = maxHealth;
+        }
     }
 
     @Override

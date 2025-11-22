@@ -89,10 +89,9 @@ public final class BlockHandlers {
         register(Material.TNT, new TntBlockHandler());
 
         for (int i = 0; i < HANDLERS.length; i++) {
-            if (HANDLERS[i] != null) {
-                continue;
+            if (HANDLERS[i] == null) {
+                HANDLERS[i] = EMPTY_BLOCK_HANDLER;
             }
-            HANDLERS[i] = EMPTY_BLOCK_HANDLER;
         }
     }
 

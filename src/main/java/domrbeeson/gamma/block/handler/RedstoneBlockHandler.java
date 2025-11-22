@@ -11,7 +11,7 @@ import java.util.Set;
 public class RedstoneBlockHandler extends InstantBreakBlockHandler {
 
     private static final List<Item> DROPS = List.of(
-        Material.REDSTONE.getItem()
+        new Item(Material.REDSTONE)
     );
 
     private static final Set<Material> PLACE_DENYLIST = Set.of(

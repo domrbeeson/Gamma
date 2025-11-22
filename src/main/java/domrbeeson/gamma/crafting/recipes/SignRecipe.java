@@ -13,6 +13,6 @@ public class SignRecipe extends ShapedCraftingRecipe {
     };
 
     public SignRecipe() {
-        super(Material.SIGN.getItem(), RECIPE);
+        super(Material.SIGN, RECIPE);
     }
 }

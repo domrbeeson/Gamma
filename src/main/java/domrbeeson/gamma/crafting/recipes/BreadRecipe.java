@@ -11,6 +11,6 @@ public class BreadRecipe extends ShapedCraftingRecipe {
     };
 
     public BreadRecipe() {
-        super(Material.BREAD.getItem(), RECIPE);
+        super(Material.BREAD, RECIPE);
     }
 }

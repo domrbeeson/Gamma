@@ -12,6 +12,6 @@ public class ShearsRecipe extends ShapedCraftingRecipe {
     };
 
     public ShearsRecipe() {
-        super(Material.SHEARS.getItem(), RECIPE);
+        super(Material.SHEARS, RECIPE);
     }
 }

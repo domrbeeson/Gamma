@@ -11,7 +11,7 @@ import java.util.SplittableRandom;
 
 public class GrassBlockHandler extends FarmlandBlockHandler {
 
-    private static final List<Item> DROPS = List.of(Material.DIRT.getItem());
+    private static final List<Item> DROPS = List.of(new Item(Material.DIRT));
 
     private final SplittableRandom random = new SplittableRandom(); // TODO this won't work in a multithreaded environment, so need to pass the random through to randomTick from the chunk shard
 

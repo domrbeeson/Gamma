@@ -13,6 +13,6 @@ public class BowRecipe extends ShapedCraftingRecipe {
     };
 
     public BowRecipe() {
-        super(Material.BOW.getItem(), RECIPE);
+        super(Material.BOW, RECIPE);
     }
 }

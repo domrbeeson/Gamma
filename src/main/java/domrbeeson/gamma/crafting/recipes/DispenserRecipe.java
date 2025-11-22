@@ -13,6 +13,6 @@ public class DispenserRecipe extends ShapedCraftingRecipe {
     };
 
     public DispenserRecipe() {
-        super(Material.DISPENSER.getItem(), RECIPE);
+        super(Material.DISPENSER, RECIPE);
     }
 }

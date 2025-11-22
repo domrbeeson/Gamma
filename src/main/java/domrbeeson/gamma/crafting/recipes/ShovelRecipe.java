@@ -2,10 +2,10 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
-import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.Material;
 
 public class ShovelRecipe extends ShapedCraftingRecipe {
-    public ShovelRecipe(Item output, RecipeItem mineral) {
+    public ShovelRecipe(Material output, RecipeItem mineral) {
         super(output, new RecipeItem[][] {
                 { mineral },
                 { STICK },

@@ -3,7 +3,6 @@ package domrbeeson.gamma.nbt.world.entity;
 import domrbeeson.gamma.entity.Entity;
 import domrbeeson.gamma.entity.object.ChestMinecartEntity;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTByte;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
@@ -29,7 +28,7 @@ public class NBTChestMinecart extends NBTMinecart {
             short itemId = itemCompound.getShort("id").getValue();
             byte amount = itemCompound.getByte("Count").getValue();
             short damage = itemCompound.getShort("Damage").getValue();
-            itemSlots.put(slot, Material.get(itemId, damage).getItem(amount));
+            itemSlots.put(slot, new Item(itemId, damage, amount));
         });
     }
 

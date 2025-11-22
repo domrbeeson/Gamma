@@ -12,6 +12,6 @@ public class TrapdoorRecipe extends ShapedCraftingRecipe {
     };
 
     public TrapdoorRecipe() {
-        super(Material.TRAPDOOR.getItem(), RECIPE);
+        super(Material.TRAPDOOR, RECIPE);
     }
 }

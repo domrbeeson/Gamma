@@ -13,6 +13,6 @@ public class MapRecipe extends ShapedCraftingRecipe {
     };
 
     public MapRecipe() {
-        super(Material.MAP.getItem(), RECIPE);
+        super(Material.MAP, RECIPE);
     }
 }

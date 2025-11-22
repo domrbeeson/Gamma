@@ -1,11 +1,12 @@
 package domrbeeson.gamma.item;
 
 import domrbeeson.gamma.block.Block;
-import domrbeeson.gamma.block.handler.WheatBlockHandler;
 import domrbeeson.gamma.crafting.CraftingRecipe;
-import domrbeeson.gamma.item.items.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum Material {
 
@@ -15,7 +16,7 @@ public enum Material {
     STONE(builder(1).opaque()),
     GRASS(builder(2).opaque()),
     DIRT(builder(3).opaque()),
-    COBBLESTONE(builder(4).itemCreator(CobblestoneItem::new).opaque()),
+    COBBLESTONE(builder(4).opaque()),
     OAK_PLANKS(builder(5).opaque()),
     OAK_SAPLING(6),
     SPRUCE_SAPLING(builder(6).metadata(1)),
@@ -101,13 +102,7 @@ public enum Material {
     DIAMOND_ORE(56),
     DIAMOND_BLOCK(57),
     CRAFTING_TABLE(58),
-    WHEAT_CROPS(builder(59).maxDurability(7).itemCreator((metadata, amount) -> {
-        if (metadata == WheatBlockHandler.FULLY_GROWN_METADATA) {
-            return new Item((short) 296, (short) 0, amount);
-        } else {
-            return new Item((short) 295, (short) 0, amount);
-        }
-    })),
+    WHEAT_CROPS(builder(59).maxMetadata(7)),
     FARMLAND(60),
     FURNACE(61),
     FURNACE_BURNING(62),
@@ -148,45 +143,45 @@ public enum Material {
     IRON_PICKAXE(builder(257).maxStack(1)),
     IRON_AXE(258),
     FLINT_AND_STEEL(259),
-    APPLE(builder(260).maxStack(1).itemCreator(AppleItem::new)),
+    APPLE(builder(260).maxStack(1)),
     BOW(261),
     ARROW(262),
-    COAL(263),
+    COAL(builder(263)),
     CHARCOAL(builder(263).metadata(1)),
     DIAMOND(264),
     IRON_INGOT(265),
     GOLD_INGOT(266),
-    IRON_SWORD(builder(267).maxDurability(250)),
-    WOOD_SWORD(builder(268).maxDurability(59)),
-    WOOD_SHOVEL(builder(269).maxDurability(59)),
-    WOOD_PICKAXE(builder(270).maxDurability(59)),
-    WOOD_AXE(builder(271).maxDurability(59)),
-    STONE_SWORD(builder(272).maxDurability(130)),
-    STONE_SHOVEL(builder(273).maxDurability(131)),
-    STONE_PICKAXE(builder(274).maxDurability(131)),
-    STONE_AXE(builder(275).maxDurability(131)),
-    DIAMOND_SWORD(builder(276).maxDurability(1560)),
-    DIAMOND_SHOVEL(builder(277).maxDurability(1561)),
-    DIAMOND_PICKAXE(builder(278).maxDurability(1561)),
-    DIAMOND_AXE(builder(279).maxDurability(1561)),
+    IRON_SWORD(builder(267).maxMetadata(250)),
+    WOOD_SWORD(builder(268).maxMetadata(59)),
+    WOOD_SHOVEL(builder(269).maxMetadata(59)),
+    WOOD_PICKAXE(builder(270).maxMetadata(59)),
+    WOOD_AXE(builder(271).maxMetadata(59)),
+    STONE_SWORD(builder(272).maxMetadata(130)),
+    STONE_SHOVEL(builder(273).maxMetadata(131)),
+    STONE_PICKAXE(builder(274).maxMetadata(131)),
+    STONE_AXE(builder(275).maxMetadata(131)),
+    DIAMOND_SWORD(builder(276).maxMetadata(1560)),
+    DIAMOND_SHOVEL(builder(277).maxMetadata(1561)),
+    DIAMOND_PICKAXE(builder(278).maxMetadata(1561)),
+    DIAMOND_AXE(builder(279).maxMetadata(1561)),
     STICK(280),
     BOWL(281),
-    MUSHROOM_SOUP(builder(282).maxStack(1).itemCreator(MushroomSoupItem::new)),
-    GOLD_SWORD(builder(283).maxDurability(31)),
-    GOLD_SHOVEL(builder(284).maxDurability(32)),
-    GOLD_PICKAXE(builder(285).maxDurability(32)),
-    GOLD_AXE(builder(286).maxDurability(32)),
+    MUSHROOM_SOUP(builder(282).maxStack(1)),
+    GOLD_SWORD(builder(283).maxMetadata(31)),
+    GOLD_SHOVEL(builder(284).maxMetadata(32)),
+    GOLD_PICKAXE(builder(285).maxMetadata(32)),
+    GOLD_AXE(builder(286).maxMetadata(32)),
     STRING(287),
     FEATHER(288),
     GUNPOWDER(289),
-    WOOD_HOE(builder(290).maxDurability(59)),
-    STONE_HOE(builder(291).maxDurability(131)),
-    IRON_HOE(builder(292).maxDurability(251)),
-    DIAMOND_HOE(builder(293).maxDurability(1561)),
-    GOLD_HOE(builder(294).maxDurability(32)),
+    WOOD_HOE(builder(290).maxMetadata(59)),
+    STONE_HOE(builder(291).maxMetadata(131)),
+    IRON_HOE(builder(292).maxMetadata(251)),
+    DIAMOND_HOE(builder(293).maxMetadata(1561)),
+    GOLD_HOE(builder(294).maxMetadata(32)),
     WHEAT_SEEDS(295),
     WHEAT(296),
-    BREAD(builder(297).maxStack(1).itemCreator(BreadItem::new)),
+    BREAD(builder(297).maxStack(1)),
     LEATHER_HELMET(298),
     LEATHER_TUNIC(299),
     LEATHER_LEGS(300),
@@ -199,19 +194,19 @@ public enum Material {
     IRON_CHEST(307),
     IRON_LEGS(308),
     IRON_BOOTS(309),
-    DIAMOND_HELMET(builder(310).maxDurability(1561)),
-    DIAMOND_CHEST(builder(311).maxDurability(1561)),
-    DIAMOND_LEGS(builder(312).maxDurability(1561)),
-    DIAMOND_BOOTS(builder(313).maxDurability(1561)),
-    GOLD_HELMET(builder(314).maxDurability(32)),
-    GOLD_CHEST(builder(315).maxDurability(32)),
-    GOLD_LEGS(builder(316).maxDurability(32)),
-    GOLD_BOOTS(builder(317).maxDurability(32)),
+    DIAMOND_HELMET(builder(310)),
+    DIAMOND_CHEST(builder(311)),
+    DIAMOND_LEGS(builder(312)),
+    DIAMOND_BOOTS(builder(313)),
+    GOLD_HELMET(builder(314)),
+    GOLD_CHEST(builder(315)),
+    GOLD_LEGS(builder(316)),
+    GOLD_BOOTS(builder(317)),
     FLINT(318),
-    RAW_PORK(builder(319).maxStack(1).itemCreator(RawPorkItem::new)),
-    COOKED_PORK(builder(320).maxStack(1).itemCreator(CookedPorkItem::new)),
+    RAW_PORK(builder(319).maxStack(1)),
+    COOKED_PORK(builder(320).maxStack(1)),
     PAINTING(321),
-    GOLDEN_APPLE(builder(322).maxStack(1).itemCreator(GoldenAppleItem::new)),
+    GOLDEN_APPLE(builder(322).maxStack(1)),
     NOTCH_APPLE(builder(322).metadata(1).maxStack(1).metadata(10)), // TODO item creator
     SIGN(builder(323).blockId(Material.SIGN_POST.blockId).maxStack(1)), // TODO sign has two block IDs, 63 sign post and 68 wall sign
     OAK_DOOR(324),
@@ -239,8 +234,8 @@ public enum Material {
     FISHING_ROD(346),
     CLOCK(347),
     GLOWSTONE_DUST(348),
-    FISH(builder(349).maxStack(1).itemCreator(FishItem::new)),
-    COOKED_FISH(builder(350).maxStack(1).itemCreator(CookedFishItem::new)),
+    FISH(builder(349).maxStack(1)),
+    COOKED_FISH(builder(350).maxStack(1)),
     INK_SAC(351),
     ROSE_RED(builder(351).metadata(1)),
     CACTUS_GREEN(builder(351).metadata(2)),
@@ -269,36 +264,33 @@ public enum Material {
     DISC_CAT(builder(2257).maxStack(1)),
     ;
 
-//    private static final Material[] MATERIALS = new Material[2258];
     private static final Map<Integer, Material> MATERIAL_BY_ID_AND_META = new HashMap<>();
 
     public final short id;
-    public final short metadata; // This is an alias of metadataMin
-    public final short metadataMin, metadataMax; // This is used for tool durability
+    public final short metadata;
+    public final short maxMetadata;
     public final boolean block;
-    public final short maxStack;
     public final byte blockId;
     public final byte blockOpacity;
+    public final byte maxStack;
     public final CraftingRecipe[] recipes;
-    private final ItemCreator itemCreator;
 
     Material(int id) {
-        this((short) id, (short) 0, (byte) 64, id >= Byte.MAX_VALUE ? -1 : (byte) id, new CraftingRecipe[0], null);
+        this((short) id, (short) 0, (byte) 64, id >= Byte.MAX_VALUE ? -1 : (byte) id, new CraftingRecipe[0]);
     }
 
     Material(Builder builder) {
-        this(builder.id, builder.metadataMin, builder.metadataMax, builder.maxStack, builder.blockId, builder.blockOpacity, builder.recipes.toArray(new CraftingRecipe[0]), builder.itemCreator);
+        this(builder.id, builder.metadata, builder.maxMetadata, builder.maxStack, builder.blockId, builder.blockOpacity, builder.recipes.toArray(new CraftingRecipe[0]));
     }
 
-    Material(short id, short metadata, byte maxStack, byte blockId, CraftingRecipe[] recipe, ItemCreator itemCreator) {
-        this(id, metadata, metadata, maxStack, blockId, (byte) 0, recipe, itemCreator);
+    Material(short id, short metadata, byte maxStack, byte blockId, CraftingRecipe[] recipe) {
+        this(id, metadata, (short) 0, maxStack, blockId, (byte) 0, recipe);
     }
 
-    Material(short id, short metadataMin, short metadataMax, byte maxStack, byte blockId, byte blockOpacity, CraftingRecipe[] recipes, ItemCreator itemCreator) {
+    Material(short id, short metadata, short maxMetadata, byte maxStack, byte blockId, byte blockOpacity, CraftingRecipe[] recipes) {
         this.id = id;
-        this.metadata = metadataMin;
-        this.metadataMin = metadataMin;
-        this.metadataMax = metadataMax;
+        this.metadata = metadata;
+        this.maxMetadata = maxMetadata;
         this.maxStack = maxStack;
         this.recipes = recipes;
         this.blockId = blockId;
@@ -309,29 +301,46 @@ public enum Material {
         } else {
             this.blockOpacity = 0;
         }
-
-        this.itemCreator = Objects.requireNonNullElseGet(itemCreator, () -> (metadata, amount) -> {
-            if (amount == 0) {
-                return Item.AIR;
-            }
-            return new Item(id, metadata, amount);
-        });
     }
 
-    public Item getItem() {
-        return getItem(1);
+    public boolean isPickaxe() {
+        return id == Material.WOOD_PICKAXE.id
+                || id == Material.STONE_PICKAXE.id
+                || id == Material.IRON_PICKAXE.id
+                || id == Material.DIAMOND_PICKAXE.id
+                || id == Material.GOLD_PICKAXE.id;
     }
 
-    public Item getItem(int amount) {
-        return getItem(metadataMin, amount);
+    public boolean isShovel() {
+        return id == Material.WOOD_SHOVEL.id
+                || id == Material.STONE_SHOVEL.id
+                || id == Material.IRON_SHOVEL.id
+                || id == Material.DIAMOND_SHOVEL.id
+                || id == Material.GOLD_SHOVEL.id;
     }
 
-    public Item getItem(int metadata, int amount) {
-        return itemCreator.create((short) metadata, amount);
+    public boolean isSword() {
+        return id == Material.WOOD_SWORD.id
+                || id == Material.STONE_SWORD.id
+                || id == Material.IRON_SWORD.id
+                || id == Material.DIAMOND_SWORD.id
+                || id == Material.GOLD_SWORD.id;
     }
 
-    public Item getItem(short metadata, int amount) {
-        return itemCreator.create(metadata, amount);
+    public boolean isAxe() {
+        return id == Material.WOOD_AXE.id
+                || id == Material.STONE_AXE.id
+                || id == Material.IRON_AXE.id
+                || id == Material.DIAMOND_AXE.id
+                || id == Material.GOLD_AXE.id;
+    }
+
+    public boolean isHoe() {
+        return id == Material.WOOD_HOE.id
+                || id == Material.STONE_HOE.id
+                || id == Material.IRON_HOE.id
+                || id == Material.DIAMOND_HOE.id
+                || id == Material.GOLD_HOE.id;
     }
 
     public static Material get(short id, short metadata) {
@@ -348,9 +357,7 @@ public enum Material {
 
     static {
         for (Material material : values()) {
-            for (short meta = material.metadataMin; meta <= material.metadataMax; meta++) {
-                MATERIAL_BY_ID_AND_META.put(material.id << 16 | meta, material);
-            }
+            MATERIAL_BY_ID_AND_META.put(material.id << 16 | material.metadata, material);
         }
     }
 
@@ -358,12 +365,11 @@ public enum Material {
         private final short id;
         private final List<CraftingRecipe> recipes = new ArrayList<>();
 
-        private short metadataMin = 0;
-        private short metadataMax = 0;
-        private byte maxStack = 64;
+        private short metadata = 0;
+        private short maxMetadata = 0;
         private byte blockId = 0;
         private byte blockOpacity = 0;
-        private ItemCreator itemCreator = null;
+        private byte maxStack = 64;
 
         public Builder(int id) {
             this.id = (short) id;
@@ -373,13 +379,12 @@ public enum Material {
         }
 
         public Builder metadata(int metadata) {
-            this.metadataMin = (short) metadata;
-            this.metadataMax = this.metadataMin;
+            this.metadata = (short) metadata;
             return this;
         }
 
-        public Builder maxStack(int maxStack) {
-            this.maxStack = (byte) maxStack;
+        public Builder maxMetadata(int maxMetadata) {
+            this.maxMetadata = (short) maxMetadata;
             return this;
         }
 
@@ -393,6 +398,11 @@ public enum Material {
             return this;
         }
 
+        public Builder maxStack(int maxStack) {
+            this.maxStack = (byte) maxStack;
+            return this;
+        }
+
         public Builder opaque() {
             this.blockOpacity = (byte) 255;
             return this;
@@ -402,22 +412,11 @@ public enum Material {
             recipes.add(recipe);
             return this;
         }
-
-        public Builder itemCreator(ItemCreator itemCreator) {
-            this.itemCreator = itemCreator;
-            return this;
-        }
-
-        public Builder maxDurability(int maxDurability) {
-            this.metadataMin = 0;
-            this.metadataMax = (short) maxDurability;
-            return this;
-        }
     }
 
-    @FunctionalInterface
-    private interface ItemCreator {
-        Item create(short metadata, int amount);
-    }
+//    @FunctionalInterface
+//    private interface ItemCreator {
+//        Item create(short metadata, int amount); // TODO this is not a good system because setting an item to 0 and returning AIR would have to be re-implemented every time an ItemCreator is used
+//    }
 
 }

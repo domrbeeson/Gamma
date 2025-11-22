@@ -3,7 +3,7 @@ package domrbeeson.gamma.block.tile;
 import domrbeeson.gamma.entity.Pos;
 import domrbeeson.gamma.network.packet.out.SignUpdatePacketOut;
 import domrbeeson.gamma.player.Player;
-import domrbeeson.gamma.world.ChunkGetter;
+import domrbeeson.gamma.world.Chunk;
 import org.jetbrains.annotations.Nullable;
 
 public class SignTileEntity extends TileEntity {
@@ -14,11 +14,11 @@ public class SignTileEntity extends TileEntity {
 
     private boolean sendUpdate = true;
 
-    public SignTileEntity(ChunkGetter chunk, int x, int y, int z) {
+    public SignTileEntity(Chunk chunk, int x, int y, int z) {
         this(chunk, x, y, z, new String[] { "", "", "", "" });
     }
 
-    public SignTileEntity(ChunkGetter chunk, int x, int y, int z, String[] lines) {
+    public SignTileEntity(Chunk chunk, int x, int y, int z, String[] lines) {
         super(chunk, x, y, z);
         this.lines = lines;
     }

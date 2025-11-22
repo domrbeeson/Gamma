@@ -15,6 +15,6 @@ public class BookshelfRecipe extends ShapedCraftingRecipe {
     };
 
     public BookshelfRecipe() {
-        super(Material.BOOKSHELF.getItem(), RECIPE);
+        super(Material.BOOKSHELF, RECIPE);
     }
 }

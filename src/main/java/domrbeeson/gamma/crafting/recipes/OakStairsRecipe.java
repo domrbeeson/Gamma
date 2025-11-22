@@ -13,6 +13,6 @@ public class OakStairsRecipe extends ShapedCraftingRecipe {
     };
 
     public OakStairsRecipe() {
-        super(Material.OAK_STAIRS.getItem(), RECIPE);
+        super(Material.OAK_STAIRS, RECIPE);
     }
 }

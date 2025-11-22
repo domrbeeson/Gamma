@@ -3,7 +3,6 @@ package domrbeeson.gamma.version;
 import domrbeeson.gamma.crafting.CraftingRecipe;
 import domrbeeson.gamma.entity.EntityType;
 import domrbeeson.gamma.item.Material;
-import domrbeeson.gamma.fuel.Fuel;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,7 +18,7 @@ public record Features(
         boolean sneaking,
         boolean fishing,
         boolean weather,
-        Set<Fuel> fuel,
+//        Set<Fuel> fuel,
         Set<CraftingRecipe> recipes,
         boolean tntRequiresFlintAndSteel,
         boolean sheepRequiresShears
@@ -36,7 +35,7 @@ public record Features(
         private boolean sneaking = false;
         private boolean fishing = false;
         private boolean weather = false;
-        private Set<Fuel> fuel = new HashSet<>();
+//        private Set<Fuel> fuel = new HashSet<>();
         private Set<CraftingRecipe> recipes = new HashSet<>();
         private boolean tntRequiresFlintAndSteel = false;
         private boolean sheepRequiresShears = false;
@@ -56,7 +55,7 @@ public record Features(
             sneaking = features.sneaking;
             fishing = features.fishing;
             weather = features.weather;
-            fuel = features.fuel;
+//            fuel = features.fuel;
             recipes = features.recipes;
             tntRequiresFlintAndSteel = features.tntRequiresFlintAndSteel;
             sheepRequiresShears = features.sheepRequiresShears;
@@ -113,15 +112,15 @@ public record Features(
             return this;
         }
 
-        public Builder fuel(Fuel fuel) {
-            this.fuel.add(fuel);
-            return this;
-        }
-
-        public Builder fuel(Collection<Fuel> fuel) {
-            this.fuel.addAll(fuel);
-            return this;
-        }
+//        public Builder fuel(Fuel fuel) {
+//            this.fuel.add(fuel);
+//            return this;
+//        }
+//
+//        public Builder fuel(Collection<Fuel> fuel) {
+//            this.fuel.addAll(fuel);
+//            return this;
+//        }
 
         public Builder recipe(CraftingRecipe recipe) {
             recipes.add(recipe);
@@ -149,7 +148,7 @@ public record Features(
                     sneaking,
                     fishing,
                     weather,
-                    fuel,
+//                    fuel,
                     recipes,
                     tntRequiresFlintAndSteel,
                     sheepRequiresShears

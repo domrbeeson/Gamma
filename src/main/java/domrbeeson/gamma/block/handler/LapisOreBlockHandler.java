@@ -23,7 +23,7 @@ public class LapisOreBlockHandler extends ToolsDropBlockHandler {
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         if (canBreakWithTool(toolId)) {
-            return List.of(Material.LAPIS_LAZULI.getItem((byte) random.nextInt(4, 9)));
+            return List.of(new Item(Material.LAPIS_LAZULI, random.nextInt(4, 9)));
         }
         return List.of();
     }

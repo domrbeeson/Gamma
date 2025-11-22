@@ -13,6 +13,6 @@ public class PistonRecipe extends ShapedCraftingRecipe {
     };
 
     public PistonRecipe() {
-        super(Material.PISTON.getItem(), RECIPE);
+        super(Material.PISTON, RECIPE);
     }
 }

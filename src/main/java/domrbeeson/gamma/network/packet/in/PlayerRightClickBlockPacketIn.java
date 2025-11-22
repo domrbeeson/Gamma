@@ -74,7 +74,8 @@ public class PlayerRightClickBlockPacketIn extends WorldPacketIn {
             short heldMetadata = heldItem.getMetadata();
             boolean placed = chunk.placeBlockAsPlayer(player, finalX, finalY, finalZ, Material.get(heldId, heldItem.getMetadata()).blockId, (byte) heldMetadata, clickedX, clickedY, clickedZ);
             if (placed) {
-                player.getInventory().setHeldItem(Material.get(heldId, heldMetadata).getItem(heldItem.getAmount() - 1));
+                heldItem.setAmount(heldItem.getAmount() - 1);
+//                player.getInventory().setHeldItem(Material.get(heldId, heldMetadata).getItem(heldItem.getAmount() - 1));
             }
         } else {
             chunk.rightClickAsPlayer(player, clickedX, clickedY, clickedZ, direction);

@@ -11,6 +11,6 @@ public class StonePressurePlate extends ShapedCraftingRecipe {
     };
 
     public StonePressurePlate() {
-        super(Material.STONE_PRESSURE_PLATE.getItem(), RECIPE);
+        super(Material.STONE_PRESSURE_PLATE, RECIPE);
     }
 }

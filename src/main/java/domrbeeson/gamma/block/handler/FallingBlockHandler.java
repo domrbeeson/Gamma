@@ -18,15 +18,15 @@ public class FallingBlockHandler implements BlockHandler {
             0, 8, 9, 10, 11
     };
 
-    private final List<Item> drop;
+    private final List<Item> drops;
 
     public FallingBlockHandler(Material material) {
-        drop = List.of(material.getItem());
+        drops = List.of(new Item(material));
     }
 
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
-        return drop;
+        return drops;
     }
 
     @Override

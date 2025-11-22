@@ -11,6 +11,8 @@ import domrbeeson.gamma.event.EventGroup;
 import domrbeeson.gamma.event.RegisteredEventListener;
 import domrbeeson.gamma.event.events.player.PlayerMoveEvent;
 import domrbeeson.gamma.event.events.server.WorldUnloadEvent;
+import domrbeeson.gamma.inventory.Inventory;
+import domrbeeson.gamma.inventory.PlayerInventory;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.network.packet.out.EntityTeleportPacketOut;
 import domrbeeson.gamma.network.packet.out.LoginPacketOut;
@@ -47,6 +49,7 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
     private final long worldTime;
     private final RegisteredEventListener<PlayerMoveEvent> playerMoveListener;
     private final Set<Chunk> saveChunks = new HashSet<>();
+    private final Set<Inventory> inventories = new HashSet<>();
 
     private int viewDistance;
     private long time;
@@ -234,6 +237,9 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
             }
         }
         staleChunks.forEach(chunk -> loadedChunks.remove(chunk.getChunkIndex()));
+
+        inventories.forEach(inv -> inv.tick(ticks));
+
         super.tick(ticks);
     }
 
@@ -370,6 +376,17 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
             }
         }
         return foundEntities;
+    }
+
+    public void registerInventory(Inventory inventory) {
+        if (inventory instanceof PlayerInventory) {
+            return;
+        }
+        inventories.add(inventory);
+    }
+
+    public void unregisterInventory(Inventory inventory) {
+        inventories.remove(inventory);
     }
 
     @Override

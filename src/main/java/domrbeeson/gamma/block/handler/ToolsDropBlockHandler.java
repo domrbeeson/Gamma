@@ -9,18 +9,18 @@ import java.util.List;
 
 public class ToolsDropBlockHandler implements BlockHandler {
 
-    private final List<Item> drop;
+    private final List<Item> drops;
     private final short[] toolIds;
 
     public ToolsDropBlockHandler(Material drop, short... toolIds) {
-        this.drop = List.of(drop.getItem());
+        this.drops = List.of(new Item(drop));
         this.toolIds = toolIds;
     }
 
     @Override
     public List<Item> getDrops(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata, short toolId) {
         if (canBreakWithTool(toolId)) {
-            return drop;
+            return drops;
         }
         return List.of();
     }

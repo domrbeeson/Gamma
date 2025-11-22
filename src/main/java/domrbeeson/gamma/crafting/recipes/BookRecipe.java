@@ -12,6 +12,6 @@ public class BookRecipe extends ShapedCraftingRecipe {
     };
 
     public BookRecipe() {
-        super(Material.BOOK.getItem(), RECIPE);
+        super(Material.BOOK, RECIPE);
     }
 }

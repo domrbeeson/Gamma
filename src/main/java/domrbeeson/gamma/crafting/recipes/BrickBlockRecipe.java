@@ -14,6 +14,6 @@ public class BrickBlockRecipe extends ShapedCraftingRecipe {
     };
 
     public BrickBlockRecipe() {
-        super(Material.BRICK_BLOCK.getItem(), RECIPE);
+        super(Material.BRICK_BLOCK, RECIPE);
     }
 }

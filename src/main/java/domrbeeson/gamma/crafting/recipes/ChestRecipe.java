@@ -13,7 +13,7 @@ public class ChestRecipe extends ShapedCraftingRecipe {
     };
 
     public ChestRecipe() {
-        super(Material.CHEST.getItem(), RECIPE);
+        super(Material.CHEST, RECIPE);
     }
 
 }

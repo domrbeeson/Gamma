@@ -2,10 +2,6 @@ package domrbeeson.gamma.version;
 
 import domrbeeson.gamma.entity.EntityType;
 import domrbeeson.gamma.item.Material;
-import domrbeeson.gamma.fuel.CoalFuel;
-import domrbeeson.gamma.fuel.LavaBucketFuel;
-import domrbeeson.gamma.fuel.LogFuel;
-import domrbeeson.gamma.fuel.SaplingFuel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -115,11 +111,11 @@ public enum MinecraftVersion {
                     EntityType.SNOWBALL,
                     EntityType.PRIMED_TNT
             ))
-            .fuel(List.of(
-                    new LavaBucketFuel(),
-                    new CoalFuel(),
-                    new LogFuel()
-            ))
+//            .fuel(List.of(
+//                    new LavaBucketFuel(),
+//                    new CoalFuel(),
+//                    new LogFuel()
+//            )
     .build()),
     ALPHA_1_1_1("Alpha 1.1.1", new Features.Builder(2)
             .extend(ALPHA_1_0_17_02)
@@ -224,9 +220,9 @@ public enum MinecraftVersion {
                     Material.SPRUCE_SAPLING
             ))
 //            .entity(EntityType.CHARGED_CREEPER) // TODO
-            .fuel(List.of(
-                    new SaplingFuel()
-            ))
+//            .fuel(List.of(
+//                    new SaplingFuel()
+//            ))
     .build()),
     BETA_1_6("Beta 1.6", new Features.Builder(13)
             .extend(BETA_1_5)

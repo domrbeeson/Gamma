@@ -6,6 +6,6 @@ import domrbeeson.gamma.item.Material;
 public class StoneButtonRecipe extends ShapelessCraftingRecipe {
 
     public StoneButtonRecipe() {
-        super(Material.STONE_BUTTON.getItem(), STONE);
+        super(Material.STONE_BUTTON, STONE);
     }
 }

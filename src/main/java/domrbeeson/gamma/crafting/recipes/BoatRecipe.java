@@ -12,6 +12,6 @@ public class BoatRecipe extends ShapedCraftingRecipe {
     };
 
     public BoatRecipe() {
-        super(Material.BOAT.getItem(), RECIPE);
+        super(Material.BOAT, RECIPE);
     }
 }

@@ -16,6 +16,6 @@ public class CakeRecipe extends ShapedCraftingRecipe {
     };
 
     public CakeRecipe() {
-        super(Material.CAKE.getItem(), RECIPE);
+        super(Material.CAKE, RECIPE);
     }
 }

@@ -13,6 +13,6 @@ public class IronDoorRecipe extends ShapedCraftingRecipe {
     };
 
     public IronDoorRecipe() {
-        super(Material.IRON_DOOR.getItem(), RECIPE);
+        super(Material.IRON_DOOR, RECIPE);
     }
 }

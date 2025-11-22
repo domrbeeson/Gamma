@@ -2,10 +2,10 @@ package domrbeeson.gamma.crafting.recipes;
 
 import domrbeeson.gamma.crafting.RecipeItem;
 import domrbeeson.gamma.crafting.ShapedCraftingRecipe;
-import domrbeeson.gamma.item.Item;
+import domrbeeson.gamma.item.Material;
 
 public class TunicRecipe extends ShapedCraftingRecipe {
-    public TunicRecipe(Item output, RecipeItem material) {
+    public TunicRecipe(Material output, RecipeItem material) {
         super(output, new RecipeItem[][] {
                 { material, AIR, material },
                 { material, material, material },

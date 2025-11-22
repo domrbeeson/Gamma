@@ -68,7 +68,7 @@ public class Chunk implements Tickable, Viewable {
     protected Chunk(Builder builder) {
         this.server = builder.server;
         this.world = builder.world;
-        if (!world.getFormat().readChunk(builder)) {
+        if (!world.getFormat().readChunk(builder, this)) {
             world.getGenerator().generate(builder);
         }
         this.chunkX = builder.x;
@@ -458,7 +458,7 @@ public class Chunk implements Tickable, Viewable {
                     if (event instanceof PlayerBlockBreakEvent pbbe) {
                         toolId = pbbe.getTool();
                         Item heldItem = pbbe.getPlayer().getInventory().getHeldItem();
-                        pbbe.getPlayer().getInventory().setHeldItem(heldItem.getMaterial().getItem());
+//                        pbbe.getPlayer().getInventory().setHeldItem(heldItem.getMaterial().getItem()); // TODO what was this for?
                     }
                     BlockHandlers.getBlockHandler(event.getCurrentId()).onBreak(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata());
 
@@ -466,7 +466,10 @@ public class Chunk implements Tickable, Viewable {
                     BlockDropItemEvent dropItemEvent = new BlockDropItemEvent(this, x, y, z, event.getCurrentId(), event.getCurrentMetadata(), drops);
                     final Pos itemSpawnPos = new Pos(x + 0.5, y + 0.5, z + 0.5);
                     dropItemEvent.getDrops().forEach(item -> {
-                        ItemEntity itemEntity = new ItemEntity(world, itemSpawnPos, item);
+                        if (item == null || item.getId() == Material.AIR.id) {
+                            return;
+                        }
+                        ItemEntity itemEntity = new ItemEntity(world, itemSpawnPos, item.clone());
                         // TODO set velocity
                         EntitySpawnEvent itemSpawnEvent = new EntitySpawnEvent(itemEntity, EntitySpawnEvent.SpawnReason.BLOCK_DROP);
                         if (!itemSpawnEvent.isCancelled()) {

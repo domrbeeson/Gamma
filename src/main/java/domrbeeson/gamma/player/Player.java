@@ -44,7 +44,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     private final PlayerInventory inventory;
 
     private @Nullable Inventory openInventory = null; // This will never be the player's inventory - that is a special case
-    private Item cursorItem = Item.AIR;
+    private Item cursorItem = Item.getAir();
 
     private boolean swingArmAnimation = false;
     private boolean damageAnimation = false;
@@ -323,7 +323,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
 
     public void setCursorItem(@Nullable Item cursorItem) {
         if (cursorItem == null || (cursorItem.getId() == 0 || cursorItem.getAmount() == 0)) {
-            cursorItem = Item.AIR;
+            cursorItem = Item.getAir();
         }
         this.cursorItem = cursorItem;
         sendPacket(new WindowCursorItemPacketOut(cursorItem));
@@ -331,7 +331,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
 
     public Item getCursorItem() {
         if (cursorItem == null) {
-            return Item.AIR;
+            return Item.getAir();
         }
         return cursorItem;
     }
@@ -387,16 +387,12 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     public void damageTool(int amount) {
         PlayerInventory inv = getInventory();
         Item heldItem = inv.getHeldItem();
-        int newMeta = heldItem.getMetadata() + amount;
-        if (newMeta >= heldItem.getMaterial().metadataMax) {
-            int newAmount = heldItem.getAmount() - 1;
-            if (newAmount <= 0) {
-                inv.setHeldItem(Item.AIR);
-            } else {
-                inv.setHeldItem(heldItem.getMaterial().getItem(newAmount));
-            }
+        short newMeta = (short) (heldItem.getMetadata() + amount);
+
+        if (newMeta < 0 || newMeta > heldItem.getMaterial().maxMetadata) {
+            inv.setHeldItem(Item.getAir());
         } else {
-            inv.setHeldItem(heldItem.getMaterial().getItem(newMeta, heldItem.getAmount()));
+            heldItem.setMetadata(newMeta);
         }
     }
 
