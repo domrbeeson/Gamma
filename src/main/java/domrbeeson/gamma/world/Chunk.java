@@ -19,13 +19,14 @@ import domrbeeson.gamma.event.events.entity.EntitySpawnEvent;
 import domrbeeson.gamma.event.events.player.PlayerBlockBreakEvent;
 import domrbeeson.gamma.event.events.player.PlayerBlockPlaceEvent;
 import domrbeeson.gamma.event.events.player.PlayerRightClickBlockEvent;
+import domrbeeson.gamma.inventory.PlayerInventory;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.ItemHandlers;
 import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.network.packet.out.BlockChangePacketOut;
 import domrbeeson.gamma.network.packet.out.ChunkPacketOut;
 import domrbeeson.gamma.network.packet.out.PreChunkPacketOut;
 import domrbeeson.gamma.network.packet.out.SignUpdatePacketOut;
+import domrbeeson.gamma.player.EntityInRange;
 import domrbeeson.gamma.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +55,7 @@ public class Chunk implements Tickable, Viewable {
     private final Set<SignTileEntity> signTileEntities;
     private final Map<EntityType, List<Entity<?>>> entitiesByType = new HashMap<>();
 
-    private final Map<Long, Map<Long, BlockChangeEvent>> scheduledBlockChanges = new HashMap<>();
+    private final Map<Long, Map<Long, BlockChangeEvent>> scheduledBlockChanges = new HashMap<>(); // <tick, <coords, event>>
     private final Map<Long, Map<Long, Block>> scheduledBlockUpdates = new HashMap<>(); // TODO only run the update if the block matches
     private final Map<Long, Map<Long, PlayerRightClickBlockEvent>> scheduledBlockRightClicks = new HashMap<>();
 
@@ -272,7 +273,7 @@ public class Chunk implements Tickable, Viewable {
             return;
         }
         Map<Long, BlockChangeEvent> blocks = scheduledBlockChanges.computeIfAbsent(server.getTick() + 1, t -> new HashMap<>());
-        blocks.put(Chunk.packChunkBlockCoords(x, y, z), new PlayerBlockBreakEvent(server, player, this, x, y, z, getBlockId(x, y, z), getBlockMetadata(x, y, z), true, player.getInventory().getHeldItem().getId(), reduceToolDurability));
+        blocks.put(Chunk.packChunkBlockCoords(x, y, z), new PlayerBlockBreakEvent(server, player, this, x, y, z, getBlockId(x, y, z), getBlockMetadata(x, y, z), true, player.getInventory().getHeldItem().id(), reduceToolDurability));
     }
 
     public void breakBlock(int x, int y, int z) {
@@ -281,19 +282,6 @@ public class Chunk implements Tickable, Viewable {
         }
         Map<Long, BlockChangeEvent> blocks = scheduledBlockChanges.computeIfAbsent(server.getTick() + 1, t -> new HashMap<>());
         blocks.put(Chunk.packChunkBlockCoords(x, y, z), new BlockBreakEvent(server, this, x, y, z, getBlockId(x, y, z), getBlockMetadata(x, y, z), true));
-    }
-
-    public boolean placeBlockAsPlayer(Player player, int x, int y, int z, byte id, byte metadata, int clickedX, byte clickedY, int clickedZ) {
-        // TODO need the direction for things like sign posts and wall signs
-        if (!areCoordsInThisChunk(x, y, z)) {
-            return false;
-        }
-        if (!BlockHandlers.getBlockHandler(id).canPlace(this, x, y, z)) {
-            return false;
-        }
-        Map<Long, BlockChangeEvent> blocks = scheduledBlockChanges.computeIfAbsent(server.getTick() + 1, t -> new HashMap<>());
-        blocks.put(packChunkBlockCoords(x, y, z), new PlayerBlockPlaceEvent(player, this, x, y, z, getBlockId(x, y, z), getBlockMetadata(x, y, z), id, metadata, clickedX, clickedY, clickedZ, true));
-        return true;
     }
 
     public void rightClickAsPlayer(Player player, int x, int y, int z, Direction direction) {
@@ -441,6 +429,42 @@ public class Chunk implements Tickable, Viewable {
             scheduledBlockUpdates.remove(ticks);
         }
 
+        Map<Long, PlayerRightClickBlockEvent> rightClicks = scheduledBlockRightClicks.get(ticks);
+        if (rightClicks != null) {
+            rightClicks.values().forEach(event -> {
+                world.call(event);
+                if (event.isCancelled()) {
+                    return;
+                }
+
+                Item heldItem = event.getHeldItem();
+                if (heldItem.getItemHandler().use(event)) {
+                    return;
+                }
+
+                int x = event.getX();
+                int y = event.getY();
+                int z = event.getZ();
+                if (BlockHandlers.getBlockHandler(getBlockId(x, y, z)).onRightClick(server, getBlock(x, y, z), event.getPlayer())) {
+                    return;
+                }
+
+                Material heldMaterial = heldItem.getMaterial();
+                if (heldMaterial.blockId > 0 && heldMaterial.isBlock()) {
+                    Pos finalPos = event.getDirection().applyDirection(x, y, z);
+                    int finalX = finalPos.getBlockX();
+                    int finalY = finalPos.getBlockY();
+                    int finalZ = finalPos.getBlockZ();
+                    Map<Long, BlockChangeEvent> b = scheduledBlockChanges.computeIfAbsent(server.getTick(), t -> new HashMap<>());
+                    long packedCoords = Chunk.packChunkBlockCoords(finalX, finalY, finalZ);
+                    byte blockId = getBlockId(finalX, finalY, finalZ);
+                    byte blockMeta = getBlockMetadata(finalX, finalY, finalZ);
+                    b.put(packedCoords, new PlayerBlockPlaceEvent(event.getPlayer(), this, finalX, finalY, finalZ, blockId, blockMeta, heldMaterial.blockId, (byte) heldMaterial.metadata, x, (byte) y, z, true));
+                }
+            });
+            scheduledBlockRightClicks.remove(ticks);
+        }
+
         Map<Long, BlockChangeEvent> blockChanges = scheduledBlockChanges.get(ticks);
         if (blockChanges != null) {
             blockChanges.values().forEach(event -> {
@@ -457,8 +481,7 @@ public class Chunk implements Tickable, Viewable {
                     short toolId = 0;
                     if (event instanceof PlayerBlockBreakEvent pbbe) {
                         toolId = pbbe.getTool();
-                        Item heldItem = pbbe.getPlayer().getInventory().getHeldItem();
-//                        pbbe.getPlayer().getInventory().setHeldItem(heldItem.getMaterial().getItem()); // TODO what was this for?
+                        pbbe.getPlayer().getInventory().setHeldItem(pbbe.getPlayer().getInventory().getHeldItem().addMetadata(1));
                     }
                     BlockHandlers.getBlockHandler(event.getCurrentId()).onBreak(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata());
 
@@ -466,10 +489,10 @@ public class Chunk implements Tickable, Viewable {
                     BlockDropItemEvent dropItemEvent = new BlockDropItemEvent(this, x, y, z, event.getCurrentId(), event.getCurrentMetadata(), drops);
                     final Pos itemSpawnPos = new Pos(x + 0.5, y + 0.5, z + 0.5);
                     dropItemEvent.getDrops().forEach(item -> {
-                        if (item == null || item.getId() == Material.AIR.id) {
+                        if (item == null || item.isAir()) {
                             return;
                         }
-                        ItemEntity itemEntity = new ItemEntity(world, itemSpawnPos, item.clone());
+                        ItemEntity itemEntity = new ItemEntity(world, itemSpawnPos, item);
                         // TODO set velocity
                         EntitySpawnEvent itemSpawnEvent = new EntitySpawnEvent(itemEntity, EntitySpawnEvent.SpawnReason.BLOCK_DROP);
                         if (!itemSpawnEvent.isCancelled()) {
@@ -478,16 +501,26 @@ public class Chunk implements Tickable, Viewable {
                     });
                 } else if (event instanceof PlayerBlockPlaceEvent playerBlockPlaceEvent) {
                     if (!BlockHandlers.getBlockHandler(event.getNewId()).canPlace(this, x, y, z)) {
-                        playerBlockPlaceEvent.getPlayer().sendPacket(new BlockChangePacketOut(event.getX(), event.getY(), event.getZ(), event.getNewId(), event.getNewMetadata()));
+                        playerBlockPlaceEvent.getPlayer().sendPacket(new BlockChangePacketOut(event.getX(), event.getY(), event.getZ(), event.getCurrentId(), event.getCurrentMetadata()));
                         return;
                     }
-                    BlockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, this, x, y, z, event.getNewId(), event.getNewMetadata(), event.getClickedX(), event.getClickedY(), event.getClickedZ(), playerBlockPlaceEvent.getPlayer());
+                    PlayerInventory inv = playerBlockPlaceEvent.getPlayer().getInventory();
+                    inv.setHeldItem(inv.getHeldItem().addAmount(-1));
                 }
 
                 byte relativeX = Block.getChunkRelativeCoord(x);
                 byte relativeZ = Block.getChunkRelativeCoord(z);
+                byte oldId = this.blocks[relativeX][y][relativeZ];
+                byte oldMeta = this.metadata[relativeX][y][relativeZ];
+                boolean triggerBreakAndPlace = BlockHandlers.getBlockHandler(oldId).triggerBreakAndPlaceOnBlockChange(server, oldId, oldMeta, event.getNewId(), event.getNewMetadata());
+                if (triggerBreakAndPlace) {
+                    BlockHandlers.getBlockHandler(oldId).onBreak(server, this, x, y, z, oldId, this.metadata[relativeX][y][relativeZ]);
+                }
                 this.blocks[relativeX][y][relativeZ] = event.getNewId();
                 this.metadata[relativeX][y][relativeZ] = event.getNewMetadata();
+                if (triggerBreakAndPlace) {
+                    BlockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, null);
+                }
                 setChanged();
                 Block block = getBlock(x, y, z);
                 BlockChangePacketOut blockChangePacket = new BlockChangePacketOut(x, y, z, block.id(), block.metadata());
@@ -529,23 +562,6 @@ public class Chunk implements Tickable, Viewable {
             });
 
             blockChanges.remove(ticks);
-        }
-
-        Map<Long, PlayerRightClickBlockEvent> rightClicks = scheduledBlockRightClicks.get(ticks);
-        if (rightClicks != null) {
-            rightClicks.values().forEach(event -> {
-                world.call(event);
-                if (event.isCancelled()) {
-                    return;
-                }
-                int x = event.getX();
-                int y = event.getY();
-                int z = event.getZ();
-                if (!BlockHandlers.getBlockHandler(getBlockId(x, y, z)).onRightClick(server, getBlock(x, y, z), event.getPlayer())) {
-                    ItemHandlers.getItemHandler(event.getHeldItem().getId()).use(event);
-                }
-            });
-            scheduledBlockRightClicks.remove(ticks);
         }
 
         for (int i = 0; i < entities.size(); i++) {
@@ -690,6 +706,20 @@ public class Chunk implements Tickable, Viewable {
 
     public byte[][][] getRawBlockLight() {
         return blockLight;
+    }
+
+    @Override
+    public SortedSet<EntityInRange> getViewersInRange(Pos centre, double radius) {
+        SortedSet<EntityInRange> players = new TreeSet<>();
+        getViewers().forEach(viewer -> {
+            // Ignore Y coordinate
+            double distance = centre.distance(new Pos(viewer.getPos().x(), centre.y(), viewer.getPos().z()));
+            if (distance > radius) {
+                return;
+            }
+            players.add(new EntityInRange(viewer, distance));
+        });
+        return players;
     }
 
     public static Collection<Chunk> getPlayerViewingChunks(Player player) {

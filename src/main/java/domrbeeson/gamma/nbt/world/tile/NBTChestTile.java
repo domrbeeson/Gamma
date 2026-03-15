@@ -57,13 +57,13 @@ public class NBTChestTile extends NBTTileEntity {
         List<NBTTag> itemsList = new ArrayList<>();
         for (byte slot = 0; slot < inventory.getSlots().length; slot++) {
             Item item = inventory.getSlot(slot);
-            short id = item.getId();
+            short id = item.id();
             if (id <= 0) {
                 continue;
             }
             Map<String, NBTTag> itemTag = new HashMap<>();
-            itemTag.put("Count", new NBTByte(item.getAmount()));
-            itemTag.put("Damage", new NBTShort(item.getMetadata()));
+            itemTag.put("Count", new NBTByte(item.amount()));
+            itemTag.put("Damage", new NBTShort(item.metadata()));
             itemTag.put("Slot", new NBTByte(slot));
             itemTag.put("id", new NBTShort(id));
             itemsList.add(new NBTCompound(itemTag));

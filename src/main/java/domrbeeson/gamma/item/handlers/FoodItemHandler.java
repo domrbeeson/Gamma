@@ -21,7 +21,7 @@ public class FoodItemHandler implements ItemHandler {
         }
 
         player.addHealth(health);
-        player.getInventory().setHeldItem(Item.getAir());
+        player.getInventory().setHeldItem(Item.AIR);
         return true;
     }
 

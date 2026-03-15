@@ -23,7 +23,7 @@ public abstract class TileEntityBlockHandler<T extends TileEntity> implements Bl
         }
         if (tile instanceof InventoryTileEntity<?> invTile) {
             for (Item item : invTile.getInventory().getSlots()) {
-                if (item.getMaterial() == Material.AIR) {
+                if (item == null || item.getMaterial() == Material.AIR) {
                     continue;
                 }
                 // TODO need to support spawning items in Chunk

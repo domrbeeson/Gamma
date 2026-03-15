@@ -21,8 +21,8 @@ public class FurnaceBlockHandler extends TileEntityBlockHandler<FurnaceTileEntit
     }
 
     @Override
-    public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new FurnaceTileEntity(chunk, x, y, z));
+    public void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
+        event.getChunk().addTileEntity(new FurnaceTileEntity(event.getChunk(), event.getX(), event.getY(), event.getZ()));
     }
 
     @Override
@@ -49,6 +49,12 @@ public class FurnaceBlockHandler extends TileEntityBlockHandler<FurnaceTileEntit
             block.chunk().markForSaving();
         }
         return true;
+    }
+
+    @Override
+    public boolean triggerBreakAndPlaceOnBlockChange(MinecraftServer server, byte oldId, byte oldMeta, byte newId, byte newMeta) {
+        return !((oldId == Material.FURNACE.blockId || oldId == Material.FURNACE_BURNING.blockId)
+                && (newId == Material.FURNACE.blockId || newId == Material.FURNACE_BURNING.blockId));
     }
 
 }

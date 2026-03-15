@@ -57,9 +57,9 @@ public class NBTInventoryTile extends NBTTileEntity {
         for (int i = 0; i < slots.length; i++) {
             Map<String, NBTTag> item = new HashMap<>();
             item.put("Slot", new NBTByte(i));
-            item.put("id", new NBTShort(slots[i].getId()));
-            item.put("Count", new NBTByte(slots[i].getAmount()));
-            item.put("Damage", new NBTShort(slots[i].getMetadata()));
+            item.put("id", new NBTShort(slots[i].id()));
+            item.put("Count", new NBTByte(slots[i].amount()));
+            item.put("Damage", new NBTShort(slots[i].metadata()));
             items.add(i, new NBTCompound(item));
         }
         tags.put("Items", new NBTList(items));

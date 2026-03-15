@@ -1,16 +1,29 @@
 package domrbeeson.gamma.item;
 
-public class Item {
+/*
+    Item is a record because updating the id, metadata, or amount of an item does not update it in an inventory,
+    which means updating items has to be done via the Inventory methods, which records which slots need updating.
+ */
+public record Item(
+        short id,
+        short metadata,
+        byte amount
+) {
 
-    private static final Item AIR = new Item((short) 0, (short) 0, (byte) 0);
+    public static final Item AIR = new Item((short) 0, (short) 0, (byte) 0);
 
-    public static Item getAir() {
-        return AIR.clone();
+    public Item {
+        Material material = Material.get(id, metadata);
+        if (material == Material.AIR || amount <= 0) {
+            id = 0;
+            metadata = 0;
+            amount = 0;
+        } else if (amount > material.maxStack) {
+            amount = material.maxStack;
+//        } else if (metadata > material.) { // TODO turn to air if metadata > max metadata (used for items with durability)
+//
+        }
     }
-
-    private short id;
-    private short metadata;
-    private byte amount;
 
     public Item(short id) {
         this(id, (short) 0);
@@ -29,68 +42,35 @@ public class Item {
     }
 
     public Item(Material material, int amount) {
-        this(material.id, material.metadata, amount);
+        this(material.id, material.metadata, (byte) amount);
     }
 
     public Item(short id, short metadata, int amount) {
-        if (id <= 0) {
-            id = 0;
-            amount = 0;
-        } else if (amount < 1) {
-            amount = 1;
-        }
-        byte maxStack = getMaterial().maxStack;
-        if (amount > maxStack) {
-            amount = maxStack;
-        }
-        this.id = id;
-        this.metadata = metadata;
-        this.amount = (byte) amount;
+        this(id, metadata, (byte) amount);
     }
 
-    public short getId() {
-        return id;
+    public boolean isAir() {
+        return id == 0;
     }
 
-    public short getMetadata() {
-        return metadata;
+    public Item setMetadata(short metadata) {
+        return new Item(id, metadata, amount);
     }
 
-    public byte getAmount() {
-        return amount;
+    public Item addMetadata(int metadata) {
+        return new Item(id, (short) (this.metadata + metadata), amount);
     }
 
-    public void setMetadata(short metadata) {
-        this.metadata = metadata;
-        // TODO update inventories somehow
+    public Item setIdAndMetadata(short id, short metadata) {
+        return new Item(id, metadata, amount);
     }
 
-    public void setIdAndMetadata(short id, short metadata) {
-        this.id = id;
-        this.metadata = metadata;
-        // TODO update inventories somehow
+    public Item addAmount(int amount) {
+        return new Item(id, metadata, this.amount + amount);
     }
 
-    public void addAmount(int amount) {
-        this.amount += (byte) amount;
-        if (this.amount <= 0) {
-            this.id = 0;
-            this.metadata = 0;
-            this.amount = 0;
-        } else if (this.amount > getMaterial().maxStack) {
-            this.amount = getMaterial().maxStack;
-        }
-    }
-
-    public void setAmount(int amount) {
-        this.amount = (byte) amount;
-        if (amount <= 0) {
-            this.id = 0;
-            this.metadata = 0;
-            this.amount = 0;
-        } else if (this.amount > getMaterial().maxStack) {
-            this.amount = getMaterial().maxStack;
-        }
+    public Item setAmount(int amount) {
+        return new Item(id, metadata, amount);
     }
 
     public Material getMaterial() {
@@ -101,8 +81,13 @@ public class Item {
         return ItemHandlers.getItemHandler(id);
     }
 
-    public Item clone() {
-        return new Item(id, metadata, amount);
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Item item)) {
+            return false;
+        }
+
+        return item.id == id && item.metadata == metadata;
     }
 
 }

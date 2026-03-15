@@ -34,7 +34,11 @@ public record Pos(double x, double y, double z, float yaw, float pitch) {
 
     // https://minecraft.wiki/w/Distance
     public double distance(Pos pos) {
-        return Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2) + Math.pow(z - pos.z, 2));
+        return distance(pos.x, pos.y, pos.z);
+    }
+
+    public double distance(double x, double y, double z) {
+        return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2) + Math.pow(this.z - z, 2));
     }
 
     // https://minecraft.wiki/w/Distance#Taxicab_distance

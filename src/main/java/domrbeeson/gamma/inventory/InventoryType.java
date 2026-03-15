@@ -1,7 +1,7 @@
 package domrbeeson.gamma.inventory;
 
 public enum InventoryType {
-    PLAYER(-1, 45),
+    PLAYER(0, 45),
     CHEST_1_ROW(0, 9),
     CHEST_2_ROWS(0, 18),
     CHEST_3_ROWS(0, 27),

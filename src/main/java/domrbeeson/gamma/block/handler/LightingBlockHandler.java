@@ -23,8 +23,8 @@ public class LightingBlockHandler implements BlockHandler {
     }};
 
     @Override
-    public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        byte lightValue = LIGHTING_VALUES.getOrDefault(newId, (byte) 0);
+    public void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
+        byte lightValue = LIGHTING_VALUES.getOrDefault(event.getNewId(), (byte) 0);
         // TODO update light values
     }
 

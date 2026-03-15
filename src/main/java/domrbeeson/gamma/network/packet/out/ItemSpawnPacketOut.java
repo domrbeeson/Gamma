@@ -18,9 +18,9 @@ public class ItemSpawnPacketOut extends PacketOut {
     public ItemSpawnPacketOut(ItemEntity item) {
         super(Packet.ITEM_SPAWN);
         this.entityId = item.getEntityId();
-        this.itemId = item.getItem().getId();
-        this.metadata = item.getItem().getMetadata();
-        this.amount = item.getItem().getAmount();
+        this.itemId = item.getItem().id();
+        this.metadata = item.getItem().metadata();
+        this.amount = item.getItem().amount();
         this.encodedPos = item.getPos().encode();
 
         // TODO

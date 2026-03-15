@@ -30,14 +30,14 @@ public class WindowItemsPacketOut extends PacketOut {
         stream.writeShort(slots);
         short id;
         for (int i = 0; i < slots; i++) {
-            id = items[i] == null ? 0 : items[i].getId();
+            id = items[i] == null ? 0 : items[i].id();
             if (id <= 0) {
                 stream.writeShort(-1);
                 continue;
             }
             stream.writeShort(id);
-            stream.writeByte(items[i].getAmount());
-            stream.writeShort(items[i].getMetadata());
+            stream.writeByte(items[i].amount());
+            stream.writeShort(items[i].metadata());
         }
     }
 

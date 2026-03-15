@@ -162,9 +162,9 @@ public class NBTPlayer implements Saveable, NBTCompoundCreator {
                 }
 				final byte s = slot;
                 invItems.add(new NBTCompound(new HashMap<>() {{
-					put("id", new NBTShort(item.getId()));
-					put("Damage", new NBTShort(item.getMetadata()));
-					put("Count", new NBTByte(item.getAmount()));
+					put("id", new NBTShort(item.id()));
+					put("Damage", new NBTShort(item.metadata()));
+					put("Count", new NBTByte(item.amount()));
 					put("Slot", new NBTByte(s));
                 }}));
             }

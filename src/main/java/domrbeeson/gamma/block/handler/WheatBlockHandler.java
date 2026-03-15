@@ -83,8 +83,7 @@ public class WheatBlockHandler extends InstantBreakBlockHandler {
         }
 
         block.chunk().setBlock(block.x(), block.y(), block.z(), block.id(), FULLY_GROWN_METADATA);
-        player.getInventory().getHeldItem().setAmount(player.getInventory().getHeldItem().getAmount() - 1);
-//        player.getInventory().setHeldItem(.getItem(heldItem.getAmount() - 1));
+        player.getInventory().setHeldItem(heldItem.addAmount(-1));
         return true;
     }
 

@@ -12,6 +12,9 @@ public interface Viewable {
     boolean isViewing(Player player);
     void addViewer(Player player);
     void removeViewer(Player player);
+    default boolean canView(Player player) {
+        return true;
+    }
     default void removeAllViewers() {
         Collection<Player> viewers = new ArrayList<>(getViewers());
         for (Player viewer : viewers) {

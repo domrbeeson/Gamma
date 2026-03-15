@@ -10,16 +10,16 @@ import java.io.IOException;
 
 public class WindowSlotPacketOut extends PacketOut {
 
-    private final byte id, amount;
+    private final byte inventoryId, amount;
     private final short slot, itemId, metadata;
 
     public WindowSlotPacketOut(InventoryType type, short slot, Item item) {
-        this(type, slot, item.getId(), item.getMetadata(), item.getAmount());
+        this(type, slot, item.id(), item.metadata(), item.amount());
     }
 
     public WindowSlotPacketOut(InventoryType type, short slot, short itemId, short metadata, byte amount) {
         super(Packet.PLAYER_INVENTORY_SLOT);
-        id = type == InventoryType.PLAYER ? (byte) 0 : (byte) 1;
+        inventoryId = type.id;
         this.slot = slot;
         this.itemId = itemId;
         this.metadata = metadata;
@@ -28,7 +28,7 @@ public class WindowSlotPacketOut extends PacketOut {
 
     @Override
     public void send(int protocol, DataOutputStream stream) throws IOException {
-        stream.writeByte(id);
+        stream.writeByte(inventoryId);
         stream.writeShort(slot);
         if (itemId > 0) {
             stream.writeShort(itemId);

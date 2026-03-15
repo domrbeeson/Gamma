@@ -23,23 +23,23 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
     }
 
     @Override
-    public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new SignTileEntity(chunk, x, y, z));
+    public void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
+        event.getChunk().addTileEntity(new SignTileEntity(event.getChunk(), event.getX(), event.getY(), event.getZ()));
 
         if (player == null) {
             return;
         }
 
-        if (clickedZ > z) {
+        if (event.getClickedZ() > event.getZ()) {
             event.setNewId(Material.WALL_SIGN.blockId);
             event.setNewMetadata(Direction.NORTH.getMetadata());
-        } else if (clickedZ < z) {
+        } else if (event.getClickedZ() < event.getZ()) {
             event.setNewId(Material.WALL_SIGN.blockId);
             event.setNewMetadata(Direction.SOUTH.getMetadata());
-        } else if (clickedX > x) {
+        } else if (event.getClickedX() > event.getX()) {
             event.setNewId(Material.WALL_SIGN.blockId);
             event.setNewMetadata(Direction.WEST.getMetadata());
-        } else if (clickedX < x) {
+        } else if (event.getClickedX() < event.getX()) {
             event.setNewId(Material.WALL_SIGN.blockId);
             event.setNewMetadata(Direction.EAST.getMetadata());
         } else {
@@ -49,7 +49,7 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
             event.setNewMetadata(meta);
         }
 
-        player.setEditingSign(new Pos(x, y, z));
+        player.setEditingSign(new Pos(event.getX(), event.getY(), event.getZ()));
     }
 
     @Override

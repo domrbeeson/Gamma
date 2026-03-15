@@ -3,24 +3,19 @@ package domrbeeson.gamma.item;
 import domrbeeson.gamma.block.Block;
 import domrbeeson.gamma.crafting.CraftingRecipe;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum Material {
-
-    // TODO max stacks
 
     AIR(0),
     STONE(builder(1).opaque()),
     GRASS(builder(2).opaque()),
     DIRT(builder(3).opaque()),
-    COBBLESTONE(builder(4).opaque()),
-    OAK_PLANKS(builder(5).opaque()),
-    OAK_SAPLING(6),
-    SPRUCE_SAPLING(builder(6).metadata(1)),
-    BIRCH_SAPLING(builder(6).metadata(2)),
+    COBBLESTONE(builder(4).opaque().smeltable(Material.STONE)),
+    OAK_PLANKS(builder(5).opaque().fuel(300)),
+    OAK_SAPLING(builder(6).fuel(100)),
+    SPRUCE_SAPLING(builder(6).metadata(1).fuel(100)),
+    BIRCH_SAPLING(builder(6).metadata(2).fuel(100)),
     BEDROCK(builder(7).opaque()),
     WATER_FLOWING(builder(8).blockOpacity(3)),
     WATER_SOURCE(builder(9).blockOpacity(3)),
@@ -31,9 +26,9 @@ public enum Material {
     GOLD_ORE(builder(14).opaque()),
     IRON_ORE(builder(15).opaque()),
     COAL_ORE(builder(16).opaque()),
-    OAK_LOG(builder(17).opaque()),
-    SPRUCE_LOG(builder(17).metadata(1).opaque()),
-    BIRCH_LOG(builder(17).metadata(2).opaque()),
+    OAK_LOG(builder(17).opaque().fuel(300)),
+    SPRUCE_LOG(builder(17).metadata(1).opaque().fuel(300)),
+    BIRCH_LOG(builder(17).metadata(2).opaque().fuel(300)),
     OAK_LEAVES(builder(18).blockOpacity(1)),
     SPRUCE_LEAVES(builder(18).metadata(1).blockOpacity(1)),
     BIRCH_LEAVES(builder(18).metadata(2).blockOpacity(1)),
@@ -146,8 +141,8 @@ public enum Material {
     APPLE(builder(260).maxStack(1)),
     BOW(261),
     ARROW(262),
-    COAL(builder(263)),
-    CHARCOAL(builder(263).metadata(1)),
+    COAL(builder(263).fuel(1600)),
+    CHARCOAL(builder(263).metadata(1).fuel(1600)),
     DIAMOND(264),
     IRON_INGOT(265),
     GOLD_INGOT(266),
@@ -212,7 +207,7 @@ public enum Material {
     OAK_DOOR(324),
     BUCKET(325),
     WATER_BUCKET(326),
-    LAVA_BUCKET(327),
+    LAVA_BUCKET(builder(327).fuel(20_000, Material.BUCKET)),
     MINECART(328),
     SADDLE(329),
     IRON_DOOR(330),
@@ -274,33 +269,35 @@ public enum Material {
     public final byte blockOpacity;
     public final byte maxStack;
     public final CraftingRecipe[] recipes;
+    public final short burnTicks;
+    public final Material fuelLeftoverItem;
+    public final Material smeltingOutput;
 
     Material(int id) {
-        this((short) id, (short) 0, (byte) 64, id >= Byte.MAX_VALUE ? -1 : (byte) id, new CraftingRecipe[0]);
+        this(builder(id));
     }
 
     Material(Builder builder) {
-        this(builder.id, builder.metadata, builder.maxMetadata, builder.maxStack, builder.blockId, builder.blockOpacity, builder.recipes.toArray(new CraftingRecipe[0]));
-    }
-
-    Material(short id, short metadata, byte maxStack, byte blockId, CraftingRecipe[] recipe) {
-        this(id, metadata, (short) 0, maxStack, blockId, (byte) 0, recipe);
-    }
-
-    Material(short id, short metadata, short maxMetadata, byte maxStack, byte blockId, byte blockOpacity, CraftingRecipe[] recipes) {
-        this.id = id;
-        this.metadata = metadata;
-        this.maxMetadata = maxMetadata;
-        this.maxStack = maxStack;
-        this.recipes = recipes;
-        this.blockId = blockId;
+        this.id = builder.id;
+        this.metadata = builder.metadata;
+        this.maxMetadata = builder.maxMetadata;
+        this.maxStack = builder.maxStack;
+        this.recipes = builder.recipes.toArray(new CraftingRecipe[0]);
+        this.blockId = builder.blockId;
+        this.burnTicks = builder.burnTicks;
+        this.fuelLeftoverItem = builder.fuelLeftoverItem;
+        this.smeltingOutput = builder.smeltingOutput;
 
         block = blockId >= 0;
         if (block) {
-            this.blockOpacity = blockOpacity;
+            this.blockOpacity = builder.blockOpacity;
         } else {
             this.blockOpacity = 0;
         }
+    }
+
+    public boolean isBlock() {
+        return block;
     }
 
     public boolean isPickaxe() {
@@ -343,6 +340,14 @@ public enum Material {
                 || id == Material.GOLD_HOE.id;
     }
 
+    public boolean isFuel() {
+        return burnTicks > 0;
+    }
+
+    public boolean isSmeltable() {
+        return smeltingOutput != null && smeltingOutput != Material.AIR;
+    }
+
     public static Material get(short id, short metadata) {
         return MATERIAL_BY_ID_AND_META.getOrDefault(id << 16 | metadata, AIR);
     }
@@ -370,6 +375,9 @@ public enum Material {
         private byte blockId = 0;
         private byte blockOpacity = 0;
         private byte maxStack = 64;
+        private short burnTicks = 0;
+        private Material fuelLeftoverItem = Material.AIR;
+        private Material smeltingOutput = Material.SPONGE;
 
         public Builder(int id) {
             this.id = (short) id;
@@ -412,11 +420,25 @@ public enum Material {
             recipes.add(recipe);
             return this;
         }
+
+        public Builder recipe(CraftingRecipe[] recipes) {
+            this.recipes.addAll(Arrays.asList(recipes));
+            return this;
+        }
+
+        public Builder fuel(int burnTicks) {
+            return fuel(burnTicks, Material.AIR);
+        }
+
+        public Builder fuel(int burnTicks, Material leftover) {
+            this.burnTicks = (short) burnTicks;
+            this.fuelLeftoverItem = leftover;
+            return this;
+        }
+
+        public Builder smeltable(Material output) {
+            this.smeltingOutput = output;
+            return this;
+        }
     }
-
-//    @FunctionalInterface
-//    private interface ItemCreator {
-//        Item create(short metadata, int amount); // TODO this is not a good system because setting an item to 0 and returning AIR would have to be re-implemented every time an ItemCreator is used
-//    }
-
 }

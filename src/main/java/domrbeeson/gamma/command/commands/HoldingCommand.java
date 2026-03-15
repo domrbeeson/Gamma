@@ -3,7 +3,6 @@ package domrbeeson.gamma.command.commands;
 import domrbeeson.gamma.command.Command;
 import domrbeeson.gamma.command.CommandSender;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.Material;
 import domrbeeson.gamma.player.Player;
 
 public class HoldingCommand implements Command {
@@ -20,6 +19,6 @@ public class HoldingCommand implements Command {
         }
 
         Item heldItem = player.getInventory().getHeldItem();
-        player.sendMessage("ID: " + heldItem.getId() + ", Material: " + Material.get(heldItem.getId(), heldItem.getMetadata()).name());
+        player.sendMessage(heldItem.amount() + "x " + heldItem.id() + ":" + heldItem.metadata() + " [" + heldItem.getMaterial().name() + "]");
     }
 }

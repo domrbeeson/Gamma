@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class FireBlockHandler implements BlockHandler {
 
     @Override
-    public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
+    public void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
         // TODO detect empty nether portal
     }
 

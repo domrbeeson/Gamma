@@ -16,7 +16,7 @@ public interface BlockHandler {
 
     }
 
-    default void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
+    default void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
 
     }
 
@@ -42,6 +42,11 @@ public interface BlockHandler {
 
     default void onIndirectPower(MinecraftServer server, Block block, byte power) {
 
+    }
+
+    // This is used to stop the tile entity being wiped when furnaces start burning
+    default boolean triggerBreakAndPlaceOnBlockChange(MinecraftServer server, byte oldId, byte oldMeta, byte newId, byte newMeta) {
+        return true;
     }
 
     // TODO onWalk for farmland and pressure plates?

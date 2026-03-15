@@ -43,13 +43,13 @@ public class NBTChestMinecart extends NBTMinecart {
     public Map<String, NBTTag> createCompoundTags() {
         Map<String, NBTTag> tags = super.createCompoundTags();
 
-        List<NBTCompound> items = new ArrayList<>();
+        List<NBTCompound> items = new ArrayList<>(); // TODO actually save chest minecart items?
         itemSlots.forEach((slot, item) -> {
             Map<String, NBTTag> itemTags = new HashMap<>();
             itemTags.put("Slot", new NBTByte(slot));
-            itemTags.put("id", new NBTShort(item.getId()));
-            itemTags.put("Count", new NBTByte(item.getAmount()));
-            itemTags.put("Damage", new NBTShort(item.getMetadata()));
+            itemTags.put("id", new NBTShort(item.id()));
+            itemTags.put("Count", new NBTByte(item.amount()));
+            itemTags.put("Damage", new NBTShort(item.metadata()));
             items.add(new NBTCompound(itemTags));
         });
         tags.put("Items", new NBTCompound(tags));

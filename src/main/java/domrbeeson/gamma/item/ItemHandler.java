@@ -4,21 +4,12 @@ import domrbeeson.gamma.event.events.player.PlayerRightClickBlockEvent;
 
 public interface ItemHandler {
 
-    boolean use(PlayerRightClickBlockEvent event);
-
-    default boolean isFuel() {
+    default boolean use(Item item) {
         return false;
     }
 
-    default short getFuelTicks() {
-        return 0;
-    }
-
-    default boolean isSmeltable() {
+    default boolean use(PlayerRightClickBlockEvent event) {
         return false;
     }
 
-    default Material getSmeltingOutput() {
-        return Material.AIR;
-    }
 }

@@ -70,6 +70,6 @@ public record ItemCommand(PlayerManager playerManager) implements Command {
         }
 
         int remainder = giveToPlayer.getInventory().addItem(new Item(material, amount));
-        sender.sendMessage("Giving '" + username + "' " + amount + "x " + material.name() + " (remainder: " + remainder + ")");
+        sender.sendMessage("Giving '" + giveToPlayer.getUsername() + "' " + amount + "x " + material.name() + " (remainder: " + remainder + ")");
     }
 }

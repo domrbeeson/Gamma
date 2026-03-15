@@ -10,10 +10,10 @@ public class PlayerWindowClickEvent extends CancellableEvent implements Event.Gl
 
     private final Player player;
     private final Inventory inventory;
-    private final int slot;
+    private final short slot;
     private final MouseButton button;
 
-    public PlayerWindowClickEvent(Player player, Inventory inventory, int slot, MouseButton button) {
+    public PlayerWindowClickEvent(Player player, Inventory inventory, short slot, MouseButton button) {
         this.player = player;
         this.inventory = inventory;
         this.slot = slot;
@@ -28,7 +28,7 @@ public class PlayerWindowClickEvent extends CancellableEvent implements Event.Gl
         return inventory;
     }
 
-    public int getSlot() {
+    public short getSlot() {
         return slot;
     }
 

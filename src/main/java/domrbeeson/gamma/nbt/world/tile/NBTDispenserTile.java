@@ -4,7 +4,6 @@ import domrbeeson.gamma.block.tile.DispenserTileEntity;
 import domrbeeson.gamma.block.tile.TileEntity;
 import domrbeeson.gamma.inventory.DispenserInventory;
 import domrbeeson.gamma.item.Item;
-import domrbeeson.gamma.item.ItemHandler;
 import domrbeeson.gamma.nbt.NBTTag;
 import domrbeeson.gamma.nbt.tags.NBTByte;
 import domrbeeson.gamma.nbt.tags.NBTCompound;
@@ -57,15 +56,14 @@ public class NBTDispenserTile extends NBTTileEntity {
         List<NBTTag> itemsList = new ArrayList<>();
         for (byte slot = 0; slot < inventory.getSlots().length; slot++) {
             Item item = inventory.getSlot(slot);
-            short id = item.getId();
-            if (id <= 0) {
+            if (item.isAir()) {
                 continue;
             }
             Map<String, NBTTag> itemTag = new HashMap<>();
-            itemTag.put("Count", new NBTByte(item.getAmount()));
-            itemTag.put("Damage", new NBTShort(item.getMetadata()));
+            itemTag.put("Count", new NBTByte(item.amount()));
+            itemTag.put("Damage", new NBTShort(item.metadata()));
             itemTag.put("Slot", new NBTByte(slot));
-            itemTag.put("id", new NBTShort(id));
+            itemTag.put("id", new NBTShort(item.id()));
             itemsList.add(new NBTCompound(itemTag));
         }
         tags.put("Items", new NBTList(itemsList));

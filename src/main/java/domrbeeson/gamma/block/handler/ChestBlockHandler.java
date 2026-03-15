@@ -21,8 +21,8 @@ public class ChestBlockHandler extends TileEntityBlockHandler<ChestTileEntity> {
     }
 
     @Override
-    public void onPlace(MinecraftServer server, BlockChangeEvent event, Chunk chunk, int x, int y, int z, byte newId, byte newMetadata, int clickedX, byte clickedY, int clickedZ, @Nullable Player player) {
-        chunk.addTileEntity(new ChestTileEntity(chunk, x, y, z));
+    public void onPlace(MinecraftServer server, BlockChangeEvent event, @Nullable Player player) {
+        event.getChunk().addTileEntity(new ChestTileEntity(event.getChunk(), event.getX(), event.getY(), event.getZ()));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ChestBlockHandler extends TileEntityBlockHandler<ChestTileEntity> {
         ChestTileEntity tile = getTileEntity(chunk, x, y, z);
         if (tile != null) {
             for (Item item : tile.getInventory().getSlots()) {
-                if (item == null || item.getId() == 0) {
+                if (item == null || item.isAir()) {
                     continue;
                 }
                 drops.add(item);

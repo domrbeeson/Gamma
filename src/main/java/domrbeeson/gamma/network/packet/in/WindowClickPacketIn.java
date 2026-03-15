@@ -28,8 +28,7 @@ public class WindowClickPacketIn extends WorldPacketIn {
         actionId = stream.readShort();
         shift = stream.readBoolean();
         if (stream.readShort() > -1) { // Use item values from player's inventory, don't use client provided values
-            stream.readByte(); // Amount
-            stream.readShort(); // Metadata
+            stream.skipBytes(3); // byte amount + short metadata
         }
     }
 
@@ -50,7 +49,7 @@ public class WindowClickPacketIn extends WorldPacketIn {
         short mappedSlot;
         if (inv != null) {
             if (slot >= inv.getType().slots) {
-                mappedSlot = Inventory.PLAYER_INVENTORY_MAPPINGS[(short) (slot - inv.getType().slots)];
+                mappedSlot = PlayerInventory.PARTIAL_MAPPINGS[(short) (slot - inv.getType().slots)];
                 inv = player.getInventory();
             } else {
                 mappedSlot = slot;

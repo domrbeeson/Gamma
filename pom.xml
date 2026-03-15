@@ -8,11 +8,6 @@
     <artifactId>gamma</artifactId>
     <version>0.0.1</version>
 
-    <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -26,6 +21,14 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>25</source>
+                    <target>25</target>
                 </configuration>
             </plugin>
         </plugins>

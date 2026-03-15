@@ -43,7 +43,7 @@ public class CraftingInventory extends Inventory {
 
     public void setOutput(Item item) {
         if (item == null) {
-            item = Item.getAir();
+            item = Item.AIR;
         }
         setSlot(outputSlot, item);
     }
@@ -52,18 +52,19 @@ public class CraftingInventory extends Inventory {
         return getSlot(outputSlot);
     }
 
+    // TODO replace this with an "onSetSlot" and make setSlot final
     @Override
     public boolean setSlot(int slot, @Nullable Item item, boolean update) {
         boolean inCraftingGrid = slot >= craftingGrid[0][0] && slot <= craftingGrid[craftingGrid.length - 1][craftingGrid.length - 1];
         int beforeId = 0;
         if (inCraftingGrid) {
-            beforeId = getSlot(slot).getId();
+            beforeId = getSlot(slot).id();
         }
         boolean updated = super.setSlot(slot, item, update);
         if (inCraftingGrid) {
-            if (beforeId == 0 && (item != null && item.getId() > 0)) {
+            if (beforeId == 0 && (item != null && !item.isAir())) {
                 craftingSlotsPopulated++;
-            } else if (beforeId > 0 && (item == null || item.getId() == 0)) {
+            } else if (beforeId > 0 && (item == null || item.isAir())) {
                 craftingSlotsPopulated--;
             }
             updateCraftingGrid();
@@ -81,20 +82,20 @@ public class CraftingInventory extends Inventory {
             return;
         }
         Item output = getOutput();
-        if (output != null && output.getId() != 0) {
+        if (output != null && !output.isAir()) {
             Player player = event.getPlayer();
             Item cursor = player.getCursorItem();
-            if (cursor.getId() > 0) {
-                Material cursorMaterial = Material.get(cursor.getId(), cursor.getMetadata());
-                if (cursor.getId() != output.getId() || cursor.getMetadata() != output.getMetadata()) {
+            if (!cursor.isAir()) {
+                if (!cursor.equals(output)) {
                     return;
                 }
-                int oldAmount = cursor.getAmount();
-                int newAmount = Math.min(cursor.getAmount() + output.getAmount(), cursorMaterial.maxStack);
+                Material cursorMaterial = cursor.getMaterial();
+                int oldAmount = cursor.amount();
+                int newAmount = Math.min(cursor.amount() + output.amount(), cursorMaterial.maxStack);
                 if (oldAmount == newAmount) {
                     return;
                 }
-                int remainder = cursor.getAmount() + output.getAmount() - newAmount;
+                int remainder = cursor.amount() + output.amount() - newAmount;
                 player.setCursorItem(new Item(cursorMaterial, newAmount));
                 setOutput(new Item(cursorMaterial, remainder));
             } else {
@@ -106,7 +107,7 @@ public class CraftingInventory extends Inventory {
                     if (populatedSlots[x][y] == null) {
                         continue;
                     }
-                    populatedSlots[x][y].setAmount(populatedSlots[x][y].getAmount() - 1);
+                    populatedSlots[x][y].setAmount(populatedSlots[x][y].amount() - 1);
 //                    setSlot(craftingGrid[x][y], Material.get(populatedSlots[x][y].getId(), populatedSlots[x][y].getMetadata()).getItem(populatedSlots[x][y].getAmount() - 1));
                 }
             }
@@ -120,12 +121,12 @@ public class CraftingInventory extends Inventory {
             for (int x = 0; x < craftingGrid.length; x++) {
                 for (int y = 0; y < craftingGrid[x].length; y++) {
                     item = getSlot(craftingGrid[x][y]);
-                    if (item.getId() == 0) {
+                    if (item.isAir()) {
                         continue;
                     }
                     // TODO drop crafting inventory item on the ground
-                    System.out.println("TODO drop " + item.getAmount() + "x " + item.getId() + ":" + item.getMetadata() + " from crafting inventory");
-                    setSlot(craftingGrid[x][y], Item.getAir());
+                    System.out.println("TODO drop " + item.amount() + "x " + item.id() + ":" + item.metadata() + " from crafting inventory");
+                    setSlot(craftingGrid[x][y], Item.AIR);
                 }
             }
         }

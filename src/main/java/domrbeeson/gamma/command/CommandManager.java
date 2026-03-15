@@ -32,6 +32,8 @@ public final class CommandManager {
 
         register(new LightCommand());
         register(new MaterialCommand());
+        register(new ViewDistanceCommand(server));
+        register(new SetSlotCommand());
     }
 
     public void register(Command command) {
@@ -41,8 +43,8 @@ public final class CommandManager {
         }
     }
 
-    public void unregister(Command command) {
-        REGISTERED_COMMANDS.remove(command.getName());
+    public boolean unregister(Command command) {
+        return REGISTERED_COMMANDS.remove(command.getName()) != null;
     }
 
     public Command get(String name) {

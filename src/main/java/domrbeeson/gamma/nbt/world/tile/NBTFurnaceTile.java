@@ -38,8 +38,8 @@ public class NBTFurnaceTile extends NBTInventoryTile {
     public Map<String, NBTTag> createCompoundTags() {
         Map<String, NBTTag> tags = super.createCompoundTags();
 
-        tags.put("BurnTime", new NBTShort(inventory.getFuelBurnProgress()));
-        tags.put("CookTime", new NBTShort(inventory.getCookProgress()));
+        tags.put("BurnTime", new NBTShort(inventory.getBurnProgress()));
+        tags.put("CookTime", new NBTShort(inventory.getBurnProgress()));
         // TODO store fuel max burn time?
 
         return tags;

@@ -29,7 +29,7 @@ public class ShapelessCraftingRecipe implements CraftingRecipe {
         for (int x = 0; x < craftingGrid.length; x++) {
             for (int y = 0; y < craftingGrid[x].length; y++) {
                 item = craftingGrid[x][y];
-                if (item == null || item.getId() == 0) {
+                if (item == null || item.isAir()) {
                     air++;
                     continue;
                 }
@@ -48,7 +48,7 @@ public class ShapelessCraftingRecipe implements CraftingRecipe {
 
     private boolean isInRecipe(Item iam) {
         for (RecipeItem ri : recipe) {
-            if (ri.getId() == iam.getId() && (!ri.ignoreMetadata() && ri.getMetadata() == iam.getMetadata())) {
+            if (ri.getId() == iam.id() && (!ri.ignoreMetadata() && ri.getMetadata() == iam.metadata())) {
                 return true;
             }
         }
@@ -57,7 +57,7 @@ public class ShapelessCraftingRecipe implements CraftingRecipe {
 
     @Override
     public Item getOutput() {
-        return output.clone();
+        return output;
     }
 
 }

@@ -20,6 +20,7 @@ import domrbeeson.gamma.version.MinecraftVersion;
 import domrbeeson.gamma.world.Chunk;
 import domrbeeson.gamma.world.Dimension;
 import domrbeeson.gamma.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     private final PlayerInventory inventory;
 
     private @Nullable Inventory openInventory = null; // This will never be the player's inventory - that is a special case
-    private Item cursorItem = Item.getAir();
+    private @NotNull Item cursorItem = Item.AIR;
 
     private boolean swingArmAnimation = false;
     private boolean damageAnimation = false;
@@ -322,17 +323,14 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     }
 
     public void setCursorItem(@Nullable Item cursorItem) {
-        if (cursorItem == null || (cursorItem.getId() == 0 || cursorItem.getAmount() == 0)) {
-            cursorItem = Item.getAir();
+        if (cursorItem == null) {
+            cursorItem = Item.AIR;
         }
         this.cursorItem = cursorItem;
         sendPacket(new WindowCursorItemPacketOut(cursorItem));
     }
 
     public Item getCursorItem() {
-        if (cursorItem == null) {
-            return Item.getAir();
-        }
         return cursorItem;
     }
 
@@ -361,10 +359,10 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
             openInventory.removeViewer(this);
             openInventory = null;
         }
-        if (cursorItem.getId() > 0) {
+        if (!cursorItem.isAir()) {
             // TODO drop cursor item
-            sendMessage("drop cursor item here [" + cursorItem.getAmount() + "x " + cursorItem.getId() + ":" + cursorItem.getMetadata() + "]");
-            cursorItem = null;
+            sendMessage("drop cursor item here [" + cursorItem.amount() + "x " + cursorItem.id() + ":" + cursorItem.metadata() + "]");
+            cursorItem = Item.AIR;
         }
     }
 
@@ -387,12 +385,13 @@ public class Player extends LivingEntity<LivingEntityMetadata> implements Comman
     public void damageTool(int amount) {
         PlayerInventory inv = getInventory();
         Item heldItem = inv.getHeldItem();
-        short newMeta = (short) (heldItem.getMetadata() + amount);
+        short newMeta = (short) (heldItem.metadata() + amount);
 
         if (newMeta < 0 || newMeta > heldItem.getMaterial().maxMetadata) {
-            inv.setHeldItem(Item.getAir());
+            inv.setHeldItem(Item.AIR);
         } else {
             heldItem.setMetadata(newMeta);
+            inv.setHeldItem(heldItem.setMetadata(newMeta));
         }
     }
 

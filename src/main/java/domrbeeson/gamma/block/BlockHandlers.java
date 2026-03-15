@@ -58,6 +58,8 @@ public final class BlockHandlers {
         register(Material.CLAY_BLOCK, new ClayBlockHandler());
         register(Material.MOSSY_COBBLESTONE, new ToolsDropBlockHandler(Material.MOSSY_COBBLESTONE, Material.WOOD_PICKAXE.id, Material.STONE_PICKAXE.id, Material.IRON_PICKAXE.id, Material.DIAMOND_PICKAXE.id, Material.GOLD_PICKAXE.id));
 
+        register(Material.FIRE, new InstantBreakBlockHandler());
+
         register(Material.CHEST, new ChestBlockHandler());
         register(Material.REDSTONE_WIRE, new RedstoneBlockHandler());
         register(Material.REDSTONE_TORCH, new RedstoneTorchBlockHandler());

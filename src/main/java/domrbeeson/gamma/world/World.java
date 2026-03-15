@@ -136,13 +136,32 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
         return viewDistance;
     }
 
-    public void setViewDistance(int viewDistance) {
+    public int setViewDistance(int viewDistance) {
         if (viewDistance > MAXIMUM_CHUNK_RADIUS) {
             viewDistance = MAXIMUM_CHUNK_RADIUS;
         } else if (viewDistance < MINIMUM_CHUNK_RADIUS) {
             viewDistance = MINIMUM_CHUNK_RADIUS;
         }
-        this.viewDistance = viewDistance;
+        if (this.viewDistance != viewDistance) {
+            this.viewDistance = viewDistance;
+            getLoadedChunks().forEach(chunk -> {
+                if (chunk.getViewersInRange(new Pos(chunk.getChunkX() * 16 + 8, 0, chunk.getChunkZ() * 16 + 8), this.viewDistance * 16 + 8).isEmpty()) {
+                    chunk.unload();
+                }
+            });
+            getViewers().forEach(viewer -> {
+                Pos pos = viewer.getPos();
+                int chunkX = pos.getChunkX();
+                int chunkZ = pos.getChunkZ();
+                int radius = Math.min(INITIAL_CHUNK_RADIUS, this.viewDistance);
+                for (int x = chunkX - radius; x < chunkX + radius; x++) {
+                    for (int z = chunkZ - radius; z < chunkZ + radius; z++) {
+                        getChunk(x, z).addViewer(viewer);
+                    }
+                }
+            });
+        }
+        return this.viewDistance;
     }
 
     public Chunk getChunk(int chunkX, int chunkZ) {
@@ -182,6 +201,10 @@ public class World extends EventGroup<Event.WorldEvent> implements Tickable, Unl
 
     public byte getBlockLight(int x, int y, int z) {
         return getChunk(x >> 4, z >> 4).getBlockLight(x, y, z);
+    }
+
+    public void setBlock(Pos pos, Material material) {
+        setBlock(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), material);
     }
 
     public void setBlock(int x, int y, int z, Material material) {

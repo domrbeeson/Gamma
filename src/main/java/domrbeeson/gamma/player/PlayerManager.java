@@ -18,7 +18,7 @@ import java.util.*;
 
 public class PlayerManager implements Closeable, Runnable {
 
-    private final Map<String, Player> PLAYERS_BY_USERNAME = new HashMap<>();
+    private final Map<String, Player> PLAYERS_BY_LOWERCASE_USERNAME = new HashMap<>();
     private final Map<PlayerConnection, Player> PLAYERS_BY_CONNECTION = new HashMap<>();
     private final MinecraftServer server;
     private final ServerSocket serverSocket;
@@ -73,8 +73,8 @@ public class PlayerManager implements Closeable, Runnable {
     }
 
     public @Nullable Player create(PlayerConnection connection, String username, MinecraftVersion version, @Nullable ChatMessage joinMessage) {
-        Player player = PLAYERS_BY_USERNAME.get(username);
-        if (player == null) {
+        return PLAYERS_BY_LOWERCASE_USERNAME.computeIfAbsent(username.toLowerCase(), _ -> {
+            Player player;
             Player.Builder builder = Player.newBuilder(server, connection, username, version, joinMessage);
             try {
                 player = server.getWorldManager().getDefaultWorld().getFormat().readPlayer(builder);
@@ -82,15 +82,15 @@ public class PlayerManager implements Closeable, Runnable {
                 connection.getWriter().send(version.features.protocol(), new PlayerKickPacketOut("Invalid player data!"));
                 return null;
             }
-            PLAYERS_BY_USERNAME.put(username, player);
             PLAYERS_BY_CONNECTION.put(connection, player);
-            System.out.println(username + " joined [players: " + PLAYERS_BY_USERNAME.size() + "]");
-        }
-        return player;
+            // TODO player join event, custom join messages
+            System.out.println(username + " joined [players: " + PLAYERS_BY_LOWERCASE_USERNAME.size() + "]");
+            return player;
+        });
     }
 
     public @Nullable Player get(String username) {
-        return PLAYERS_BY_USERNAME.get(username);
+        return PLAYERS_BY_LOWERCASE_USERNAME.get(username.toLowerCase());
     }
 
     public @Nullable Player get(PlayerConnection connection) {
@@ -98,7 +98,7 @@ public class PlayerManager implements Closeable, Runnable {
     }
 
     protected boolean remove(Player player) {
-        PLAYERS_BY_USERNAME.remove(player.getUsername());
+        PLAYERS_BY_LOWERCASE_USERNAME.remove(player.getUsername().toLowerCase());
         return PLAYERS_BY_CONNECTION.remove(player.getConnection()) != null;
     }
 
@@ -107,11 +107,11 @@ public class PlayerManager implements Closeable, Runnable {
     }
 
     public boolean isOnline(String username) {
-        return PLAYERS_BY_USERNAME.containsKey(username);
+        return PLAYERS_BY_LOWERCASE_USERNAME.containsKey(username.toLowerCase());
     }
 
     public Collection<Player> getPlayers() {
-        return PLAYERS_BY_USERNAME.values();
+        return PLAYERS_BY_LOWERCASE_USERNAME.values();
     }
 
     @Override
@@ -122,7 +122,7 @@ public class PlayerManager implements Closeable, Runnable {
     }
 
     public int getPlayersOnline() {
-        return PLAYERS_BY_USERNAME.size();
+        return PLAYERS_BY_LOWERCASE_USERNAME.size();
     }
 
 }
