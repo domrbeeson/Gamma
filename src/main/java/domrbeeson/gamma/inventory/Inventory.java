@@ -115,8 +115,6 @@ public abstract class Inventory implements Tickable, Viewable {
             return amount;
         }
 
-        broadcast("adding " + amount + "x " + id);
-
         // Find existing stacks to merge with first
         short maxStack = Material.get(id, metadata).maxStack;
         for (short slot = 0; slot <= items.length - 1; slot++) {

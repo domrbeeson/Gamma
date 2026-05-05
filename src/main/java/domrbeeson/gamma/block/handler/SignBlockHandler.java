@@ -45,7 +45,6 @@ public class SignBlockHandler extends TileEntityBlockHandler<SignTileEntity> {
         } else {
             event.setNewId(Material.SIGN_POST.blockId);
             byte meta = (byte) Math.floor((player.getPos().yaw() + 180f) / 22.5 + 0.5);
-            server.broadcast("sign rotation: " + meta);
             event.setNewMetadata(meta);
         }
 

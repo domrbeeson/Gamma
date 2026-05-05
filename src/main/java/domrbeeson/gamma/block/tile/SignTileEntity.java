@@ -50,7 +50,7 @@ public class SignTileEntity extends TileEntity {
     }
 
     public boolean setLines(String[] lines, @Nullable Player player) {
-        if (player != null && !player.isEditingSign(new Pos(getX(), getY(), getZ()))) {
+        if (player == null || !player.isEditingSign(new Pos(getX(), getY(), getZ()))) {
             return false;
         }
         if (lines.length > this.lines.length) {
