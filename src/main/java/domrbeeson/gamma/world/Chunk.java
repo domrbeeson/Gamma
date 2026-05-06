@@ -118,6 +118,13 @@ public class Chunk implements Tickable, Viewable {
         return blocks[relativeX][y][relativeZ];
     }
 
+    public byte getBlockId(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return Material.AIR.blockId;
+        }
+        return blocks[x][y][z];
+    }
+
     public byte getBlockMetadata(int x, int y, int z) {
         if (!areCoordsInThisChunk(x, y, z)) {
             return 0;
@@ -125,6 +132,13 @@ public class Chunk implements Tickable, Viewable {
         byte relativeX = Block.getChunkRelativeCoord(x);
         byte relativeZ = Block.getChunkRelativeCoord(z);
         return metadata[relativeX][y][relativeZ];
+    }
+
+    public byte getBlockMetadata(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return 0;
+        }
+        return metadata[x][y][z];
     }
 
     public byte getBlockLight(int x, int y, int z) {
@@ -136,6 +150,13 @@ public class Chunk implements Tickable, Viewable {
         return blockLight[relativeX][y][relativeZ];
     }
 
+    public byte getBlockLight(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return 0;
+        }
+        return blockLight[x][y][z];
+    }
+
     public byte getSkyLight(int x, int y, int z) {
         if (!areCoordsInThisChunk(x, y, z)) {
             return 0;
@@ -143,6 +164,13 @@ public class Chunk implements Tickable, Viewable {
         byte relativeX = Block.getChunkRelativeCoord(x);
         byte relativeZ = Block.getChunkRelativeCoord(z);
         return skyLight[relativeX][y][relativeZ];
+    }
+
+    public byte getSkyLight(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return 0;
+        }
+        return skyLight[x][y][z];
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -155,6 +183,24 @@ public class Chunk implements Tickable, Viewable {
                 x,
                 y,
                 z,
+                getBlockId(x, y, z),
+                getBlockMetadata(x, y, z),
+                getBlockLight(x, y, z),
+                getSkyLight(x, y, z)
+        );
+    }
+
+    @Nullable
+    public Block getBlock(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return null;
+        }
+        return new Block(
+                world,
+                this,
+                x + (chunkX * Chunk.WIDTH),
+                y,
+                z + (chunkZ * Chunk.WIDTH),
                 getBlockId(x, y, z),
                 getBlockMetadata(x, y, z),
                 getBlockLight(x, y, z),
@@ -181,6 +227,13 @@ public class Chunk implements Tickable, Viewable {
         byte relativeX = Block.getChunkRelativeCoord(x);
         byte relativeZ = Block.getChunkRelativeCoord(z);
         return Material.get(blocks[relativeX][y][relativeZ], metadata[relativeX][y][relativeZ]);
+    }
+
+    public Material getMaterial(byte x, int y, byte z) {
+        if (x < 0 || x > Chunk.WIDTH || z < 0 || z > Chunk.WIDTH) {
+            return null;
+        }
+        return Material.get(blocks[x][y][z], metadata[x][y][z]);
     }
 
     public boolean areCoordsInThisChunk(int x, int y, int z) {
@@ -477,11 +530,15 @@ public class Chunk implements Tickable, Viewable {
                 int y = event.getY();
                 int z = event.getZ();
 
+                Player player = null;
                 if (event instanceof BlockBreakEvent) {
                     short toolId = 0;
                     if (event instanceof PlayerBlockBreakEvent pbbe) {
                         toolId = pbbe.getTool();
-                        pbbe.getPlayer().getInventory().setHeldItem(pbbe.getPlayer().getInventory().getHeldItem().addMetadata(1));
+                        player = pbbe.getPlayer();
+                        if (Material.get(toolId, (byte) 0).hasDurability()) {
+                            player.getInventory().setHeldItem(pbbe.getPlayer().getInventory().getHeldItem().addMetadata(1));
+                        }
                     }
                     BlockHandlers.getBlockHandler(event.getCurrentId()).onBreak(server, this, x, y, z, event.getCurrentId(), event.getCurrentMetadata());
 
@@ -500,11 +557,12 @@ public class Chunk implements Tickable, Viewable {
                         }
                     });
                 } else if (event instanceof PlayerBlockPlaceEvent playerBlockPlaceEvent) {
+                    player = playerBlockPlaceEvent.getPlayer();
                     if (!BlockHandlers.getBlockHandler(event.getNewId()).canPlace(this, x, y, z)) {
-                        playerBlockPlaceEvent.getPlayer().sendPacket(new BlockChangePacketOut(event.getX(), event.getY(), event.getZ(), event.getCurrentId(), event.getCurrentMetadata()));
+                        player.sendPacket(new BlockChangePacketOut(event.getX(), event.getY(), event.getZ(), event.getCurrentId(), event.getCurrentMetadata()));
                         return;
                     }
-                    PlayerInventory inv = playerBlockPlaceEvent.getPlayer().getInventory();
+                    PlayerInventory inv = player.getInventory();
                     inv.setHeldItem(inv.getHeldItem().addAmount(-1));
                 }
 
@@ -519,16 +577,16 @@ public class Chunk implements Tickable, Viewable {
                 this.blocks[relativeX][y][relativeZ] = event.getNewId();
                 this.metadata[relativeX][y][relativeZ] = event.getNewMetadata();
                 if (triggerBreakAndPlace) {
-                    BlockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, null);
+                    BlockHandlers.getBlockHandler(event.getNewId()).onPlace(server, event, player);
                 }
                 setChanged();
-                Block block = getBlock(x, y, z);
-                BlockChangePacketOut blockChangePacket = new BlockChangePacketOut(x, y, z, block.id(), block.metadata());
+                BlockChangePacketOut blockChangePacket = new BlockChangePacketOut(x, y, z, event.getNewId(), event.getNewMetadata());
                 for (Player viewer : viewers) {
                     viewer.sendPacket(blockChangePacket);
                 }
 
                 if (event.doUpdate()) {
+                    Block block = getBlock(relativeX, y, relativeZ);
                     BlockUpdateEvent updateEvent = new BlockUpdateEvent(ticks, block);
                     world.call(updateEvent);
                     if (!updateEvent.isCancelled()) {

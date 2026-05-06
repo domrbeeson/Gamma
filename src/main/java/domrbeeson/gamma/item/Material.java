@@ -300,6 +300,15 @@ public enum Material {
         return block;
     }
 
+    public boolean hasDurability() {
+        return isPickaxe()
+                || isShovel()
+                || isSword()
+                || isAxe()
+                || isHoe()
+                ;
+    }
+
     public boolean isPickaxe() {
         return id == Material.WOOD_PICKAXE.id
                 || id == Material.STONE_PICKAXE.id
