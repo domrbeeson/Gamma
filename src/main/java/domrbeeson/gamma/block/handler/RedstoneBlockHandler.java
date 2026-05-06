@@ -32,4 +32,9 @@ public class RedstoneBlockHandler extends InstantBreakBlockHandler {
         return true;
     }
 
+    @Override
+    public void onBreak(MinecraftServer server, Chunk chunk, int x, int y, int z, byte id, byte metadata) {
+
+    }
+
 }
